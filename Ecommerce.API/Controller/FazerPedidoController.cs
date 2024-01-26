@@ -12,6 +12,7 @@ namespace Ecommerce.API.Controller
         public FazerPedidosController(IFazerPedidoService fazerPedidoService)
         {
             _fazerPedidoService = fazerPedidoService;
+
         }
 
         [HttpPost("FazerPedido")]
