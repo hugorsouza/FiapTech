@@ -8,17 +8,19 @@ namespace Ecommerce.API.Controller
     [Route("Pedidos")]
     public class FazerPedidosController : ControllerBase
     {
-        private readonly IFazerPedidoService _fazerPedidoService;
+        private readonly IFazerPedidoService _PedidoService;
         public FazerPedidosController(IFazerPedidoService fazerPedidoService)
         {
-            _fazerPedidoService = fazerPedidoService;
+            _PedidoService = fazerPedidoService;
+
+            Console.WriteLine();
 
         }
 
-        [HttpPost("FazerPedido")]
-        public IActionResult FazerPedido(FazerPedidoDTO fazerPedidoDTO)
+        [HttpGet("GetPedidos")]
+        public IActionResult FazerPedido()
         {
-            var retorno = _fazerPedidoService.FazerPedido(fazerPedidoDTO);
+            var retorno = _PedidoService.Pedidos();
             return Ok(retorno);
         }
     }

@@ -9,10 +9,29 @@ namespace Ecommerce.Application.Services
         public FazerPedidoService()
         {
         }
-        public FazerPedidoDTO FazerPedido(FazerPedidoDTO fazerPedidoDTO)
+        public List<FazerPedidoDTO> Pedidos()
         {
-            //var fazerPedido = _fazerPedidoService.FazerPedido(fazerPedidoDTO); 
-            return fazerPedidoDTO;
+            var pedidos = new List<FazerPedidoDTO>();
+
+            pedidos.Add(new FazerPedidoDTO
+            {
+                Id=1,
+                Usuario="Lucas Rodrigues",
+                DataPedido=DateTime.Now.AddDays(-1),
+                Status="Separação",
+                TipoPedido="Site"
+            });
+
+            pedidos.Add(new FazerPedidoDTO
+            {
+                Id = 2,
+                Usuario = "Hugo Souza",
+                DataPedido = DateTime.Now.AddDays(-3),
+                Status = "Entregue",
+                TipoPedido = "Loja"
+            });
+
+            return pedidos;
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Ecommerce.Application.Services.Interfaces
 {
     public interface IFazerPedidoService
     {
-        public FazerPedidoDTO FazerPedido(FazerPedidoDTO fazerPedidoDTO);
+        public List<FazerPedidoDTO> Pedidos();
     }
 }

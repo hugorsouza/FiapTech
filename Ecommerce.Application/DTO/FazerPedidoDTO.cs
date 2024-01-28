@@ -8,7 +8,7 @@
         public int Id { get; set; }
         public string Usuario { get; set; }
         public DateTime DataPedido { get; set; }
-        public bool Status { get; set; }
-        public bool TipoPedido { get; set; }
+        public string Status { get; set; }
+        public string TipoPedido { get; set; }
     }
 }
