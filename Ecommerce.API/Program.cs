@@ -13,6 +13,7 @@ using Ecommerce.Infra.Dapper.Extensions;
 using Ecommerce.Infra.Dapper.Seed;
 using Ecommerce.Infra.Logging.Logging;
 using FluentValidation;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,26 @@ builder.Services
 builder.Logging.ClearProviders()
     .AddProvider(new CustomLoggerProvider( new CustomLoggerProviderConfiguration(), builder.Configuration));
 
+
+IHost host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((hostContext, services) =>
+    {
+        var configuration = builder.Configuration;
+        var connServiceBus = configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
+
+        var serviceProvider = new ServiceCollection()
+        .AddMassTransit((x =>
+        {
+            x.UsingAzureServiceBus((context, cfg) =>
+            {
+                cfg.Host(connServiceBus);
+
+             });
+
+           
+        }));
+
+    }).Build();
 
 
 var app = builder.Build();
