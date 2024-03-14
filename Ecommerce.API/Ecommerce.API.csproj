@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Ecommerce.Infra.Auth\Ecommerce.Infra.Auth.csproj" />
     <ProjectReference Include="..\Ecommerce.Infra.Dapper\Ecommerce.Infra.Dapper.csproj" />
     <ProjectReference Include="..\Ecommerce.Infra.Logging\Ecommerce.Infra.Logging.csproj" />
+    <ProjectReference Include="..\Ecommerce.Infra.ServiceBus\Ecommerce.Infra.ServiceBus.csproj" />
   </ItemGroup>
 
   <ItemGroup>
