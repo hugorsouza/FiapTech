@@ -14,6 +14,7 @@ using Ecommerce.Infra.Dapper.Seed;
 using Ecommerce.Infra.Logging.Logging;
 using FluentValidation;
 using MassTransit;
+using IHost = Microsoft.Extensions.Hosting.IHost;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,17 +40,23 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         var configuration = builder.Configuration;
-        var connServiceBus = configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
+        var connServiceBus = "Endpoint=sb://sb-fiap-tech.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Ql9xGRVUDFW3XcKYq/spXyQ+tZcstUVMC+ASbF+wlOs=";
+        //configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
 
-        var serviceProvider = new ServiceCollection()
+        //var serviceProvider = new ServiceCollection()
+
+        builder.Services.AddMassTransit()
         .AddMassTransit((x =>
         {
             x.UsingAzureServiceBus((context, cfg) =>
             {
                 cfg.Host(connServiceBus);
 
-             });
+                cfg.ConfigureEndpoints(context);
 
+            });
+
+            
            
         }));
 

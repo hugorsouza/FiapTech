@@ -8,62 +8,44 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var app = builder.Build();
-
-
-
-//IHost host = Host.CreateDefaultBuilder(args)
-//    .ConfigureServices((hostContext, services) =>
-//    {
-//        var configuration = builder.Configuration;
-//        var connServiceBus = configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
-
-//        builder.Services.AddMassTransit((x =>
-//        {
-//            x.UsingAzureServiceBus((context, cfg) =>
-//            {
-//                cfg.Host(connServiceBus);
-
-//                cfg.ReceiveEndpoint(configuration.GetSection("MassTransit:ServiceBus:Queues:Fabricante").Value, e =>
-//                {
-//                    e.Consumer<FabricanteQueue>();
-//                });
-                                
-//            });
-
-//            x.AddConsumer<FabricanteQueue>();
-//        }));
-
-//    }).Build();
-
-
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         var configuration = builder.Configuration;
-        var connServiceBus = configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
+        var connServiceBus = "Endpoint=sb://sb-fiap-tech.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Ql9xGRVUDFW3XcKYq/spXyQ+tZcstUVMC+ASbF+wlOs=";
+        //configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
 
-        var serviceProvider = new ServiceCollection()
+        //var serviceProvider = new ServiceCollection()
+
+        builder.Services
         .AddMassTransit((x =>
         {
             x.UsingAzureServiceBus((context, cfg) =>
             {
                 cfg.Host(connServiceBus);
 
-                cfg.ReceiveEndpoint(configuration.GetSection("MassTransit:ServiceBus:Queues:Fabricante").Value, e =>
+                cfg.ReceiveEndpoint("filateste", e =>
                 {
-                    e.Consumer<FabricanteQueue>();
+                    e.Consumer<CategoriaQueue>();
+                    
+                    
                 });
 
             });
 
-            //x.AddConsumer<FabricanteQueue>();
         }));
 
+       
     }).Build();
 
 
+
+
+builder.Services.AddMassTransitHostedService();
+
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 

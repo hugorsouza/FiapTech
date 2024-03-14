@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
+using Ecommerce.Domain.Entities.Pedidos;
+using System.Text.Json;
+using Ecommerce.Domain.Entities.Produtos;
+using System.Text;
 
 namespace Ecommerce.API.Controller
 {
@@ -18,11 +22,27 @@ namespace Ecommerce.API.Controller
         [HttpPost]        
         public async Task<IActionResult> ServicoDeOnibus(int id)
         {
+            var categoria = new Categoria
+            {
+                Id = 1,
+                Descricao = "Teste",
+                Nome = "Teste",
+                Ativo = true
+            };
+
+
             var queue = "FilaTeste";
 
             var endpoint = await _bus.GetSendEndpoint(new Uri($"queue:{queue}"));
+                 
 
-            await endpoint.Send(new {Id=1});
+            await endpoint.Send(categoria);
+            
+            //  await endpoint.Send(new Pedido{Id=1});
+
+
+            
+            
 
             return Ok();
         }
