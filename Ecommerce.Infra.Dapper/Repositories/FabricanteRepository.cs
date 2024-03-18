@@ -61,7 +61,7 @@ namespace Ecommerce.Infra.Dapper.Repositories
 
             try
             {
-                var query1 = "UPDATE FABRICANTE SET Nome=@Nome, Ativo=@Ativo, CNPJ=@CNPJ where Id=Id";
+                var query1 = "UPDATE FABRICANTE SET Nome=@Nome, Ativo=@Ativo, CNPJ=@CNPJ where Id=@Id";
                 dbConnection.Execute(query1, entidade, transaction);
 
                 if (entidade.Endereco != null)

@@ -1,4 +1,5 @@
 using Ecommerce.Consumer.Background.Queues.CategoriaQueue;
+using Ecommerce.Consumer.Background.Queues.FabricanteQueue;
 using Ecommerce.Domain.Interfaces;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Infra.Dapper.Factory;
@@ -17,7 +18,8 @@ builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>()
                 .AddScoped<UnitOfWork>()
                 .AddScoped<ITransactionService>(sp => sp.GetService<UnitOfWork>())
                 .AddScoped<IUnitOfWork>(sp => sp.GetService<UnitOfWork>())
-                .AddScoped<ICategoriaRepository, CategoriaRepository>();
+                .AddScoped<ICategoriaRepository, CategoriaRepository>()
+                .AddScoped<IFabricanteRepository, FabricanteRepository>();
 
 builder.Services.AddControllers();
 
@@ -34,16 +36,23 @@ IHost host = Host.CreateDefaultBuilder(args)
         builder.Services
         .AddMassTransit((x =>
         {
+
             x.AddConsumer<CategoriaInsertQueue>();
             x.AddConsumer<CategoriaUpdateQueue>();
+
+            x.AddConsumer<FabricanteInsertQueue>();
+            x.AddConsumer<FabricanteUpdateQueue>();
 
             x.UsingAzureServiceBus((context, cfg) =>
             {
                 cfg.Host(connServiceBus);
 
                 cfg.ReceiveEndpoint("categoriainsertqueue", e => { e.ConfigureConsumer<CategoriaInsertQueue>(context); });
-
                 cfg.ReceiveEndpoint("categoriaupdatequeue", e => { e.ConfigureConsumer<CategoriaUpdateQueue>(context); });
+
+                cfg.ReceiveEndpoint("fabricanteinsertqueue", e => { e.ConfigureConsumer<FabricanteInsertQueue>(context); });
+                cfg.ReceiveEndpoint("fabricanteupdatequeue", e => { e.ConfigureConsumer<FabricanteUpdateQueue>(context); });
+
 
             });
 

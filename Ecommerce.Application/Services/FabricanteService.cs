@@ -3,6 +3,8 @@ using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Domain.Services;
 using Ecommerce.Domain.Exceptions;
+using FluentValidation.Validators;
+using Ecommerce.Infra.ServiceBus.Interface;
 
 namespace Ecommerce.Application.Services
 {
@@ -10,10 +12,12 @@ namespace Ecommerce.Application.Services
     {
 
         private readonly IFabricanteRepository _fabricanteRepository;
+        private readonly IServiceBus _serviceBus;
 
-        public FabricanteService(IFabricanteRepository fabricanteRepository)
+        public FabricanteService(IFabricanteRepository fabricanteRepository, IServiceBus serviceBus)
         {
             _fabricanteRepository = fabricanteRepository;
+            _serviceBus = serviceBus;
         }
 
         public Fabricante Alterar(Fabricante entidade)
@@ -23,8 +27,10 @@ namespace Ecommerce.Application.Services
             if (categoria is null)
                 throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entidade.Id} não está cadastrado na Base");
 
-            _fabricanteRepository.Alterar(entidade);
-            
+            //_fabricanteRepository.Alterar(entidade);
+
+            _serviceBus.SendMessage(entidade, "fabricanteupdatequeue");
+
             return entidade;
         }
 
@@ -41,7 +47,8 @@ namespace Ecommerce.Application.Services
                 .Any(x=> x.CNPJ.Equals(fabricante.CNPJ)))
                 throw RequisicaoInvalidaException.PorMotivo($"O fabrinte {fabricante.CNPJ} Já está cadastrado na base!");
 
-            _fabricanteRepository.Cadastrar(fabricante);
+            //_fabricanteRepository.Cadastrar(fabricante);
+            _serviceBus.SendMessage(fabricante, "fabricanteinsertqueue");
 
             var fabricanteViewModel = BuildViewModel(fabricante);
 
