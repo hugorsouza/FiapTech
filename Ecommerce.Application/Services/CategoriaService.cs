@@ -3,6 +3,7 @@ using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Exceptions;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Domain.Services;
+using Ecommerce.Infra.ServiceBus.Interface;
 
 namespace Ecommerce.Application.Services
 {
@@ -10,10 +11,12 @@ namespace Ecommerce.Application.Services
     {
 
         private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IServiceBus _serviceBus;
 
-        public CategoriaService(ICategoriaRepository categoriaRepository)
+        public CategoriaService(ICategoriaRepository categoriaRepository, IServiceBus serviceBus)
         {
             _categoriaRepository = categoriaRepository;
+            _serviceBus = serviceBus;
         }
 
         public Categoria Alterar(Categoria model)
@@ -23,7 +26,8 @@ namespace Ecommerce.Application.Services
             if (categoria is null)
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {model.Id} não está cadastrada na Base!");
 
-            _categoriaRepository.Alterar(model);
+            //_categoriaRepository.Alterar(model);
+            _serviceBus.SendMessage(model, "categoriaupdatequeue");
 
             return model;
         }
@@ -36,7 +40,9 @@ namespace Ecommerce.Application.Services
                 .Any(x => x.Nome.Equals(categoria.Nome)))
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {categoria.Nome} Já está cadastrada!");
 
-            _categoriaRepository.Cadastrar(categoria);
+            //_categoriaRepository.Cadastrar(categoria);
+            _serviceBus.SendMessage(categoria,"categoriainsertqueue");
+
 
             var categoriaViewModel = BuildViewModel(categoria);
 

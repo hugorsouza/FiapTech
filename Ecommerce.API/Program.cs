@@ -12,6 +12,8 @@ using Ecommerce.Infra.Auth.Extensions;
 using Ecommerce.Infra.Dapper.Extensions;
 using Ecommerce.Infra.Dapper.Seed;
 using Ecommerce.Infra.Logging.Logging;
+using Ecommerce.Infra.ServiceBus.Interface;
+using Ecommerce.Infra.ServiceBus.Service;
 using FluentValidation;
 using MassTransit;
 using IHost = Microsoft.Extensions.Hosting.IHost;
@@ -31,6 +33,7 @@ builder.Services
     .AddScoped<IPedidoService, PedidoService>()
     .AddScoped<IEstoqueService, EstoqueService>()
     .AddScoped<ExceptionMiddleware>()
+    .AddScoped<IServiceBus,ServiceBus>()
     .AddAppServices();
 builder.Logging.ClearProviders()
     .AddProvider(new CustomLoggerProvider( new CustomLoggerProviderConfiguration(), builder.Configuration));
