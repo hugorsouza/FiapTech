@@ -7,6 +7,7 @@ using Ecommerce.Domain.Exceptions;
 using Ecommerce.Domain.Interfaces.Repository;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Domain.Services;
+using Ecommerce.Infra.ServiceBus.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
@@ -20,19 +21,22 @@ namespace Ecommerce.Application.Services
         private readonly IUsuarioManager _usuarioManager;
         private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IConfiguration _configuration;
+        private readonly IServiceBus _serviceBus;
 
         public ProdutoService(
             IProdutoRepository produtoRepository, 
             IEstoqueRepository estoqueRepository, 
             IUsuarioManager usuarioManager,
             IFuncionarioRepository funcionarioRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IServiceBus serviceBus)
         {
             _produtoRepository = produtoRepository; 
             _estoqueRepository = estoqueRepository;
             _usuarioManager = usuarioManager;
             _funcionarioRepository = funcionarioRepository;
             _configuration = configuration;
+            _serviceBus = serviceBus;
         }
 
         public async Task<ProdutoViewModel> Cadastrar(ProdutoViewModel entidade)
@@ -47,21 +51,34 @@ namespace Ecommerce.Application.Services
             var produtoViewModel = BuildViewModel(produto);
 
             //Add item no estoque
-            var consultaUser = _usuarioManager.ObterUsuarioAtual();
-            if (consultaUser == null)
-                throw RequisicaoInvalidaException.PorMotivo($"Funcionario {consultaUser.Id} não localizado");
+            //var consultaUser = _usuarioManager.ObterUsuarioAtual();
+           // if (consultaUser == null)
+            //    throw RequisicaoInvalidaException.PorMotivo($"Funcionario {consultaUser.Id} não localizado");
 
-            var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
+           // var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
+
+            //var estoque = new Estoque
+            //{
+            //    UsuarioDocumento = consultaFuncionario.Cpf,
+            //    Usuario = consultaUser.NomeExibicao,
+            //    QuantidadeAtual = 0,
+            //    DataUltimaMovimentacao = DateTime.UtcNow
+            //};
+
 
             var estoque = new Estoque
             {
-                UsuarioDocumento = consultaFuncionario.Cpf,
-                Usuario = consultaUser.NomeExibicao,
+                UsuarioDocumento = "1342342354",
+                Usuario = "Pedro Alvares Cabral",
                 QuantidadeAtual = 0,
                 DataUltimaMovimentacao = DateTime.UtcNow
             };
 
-            var produtoId = await _produtoRepository.CadastrarAsync(produto, estoque);
+            var produtoEstoque = new { Produto = produto, Estoque = estoque };
+
+
+            //var produtoId = await _produtoRepository.CadastrarAsync(produto, estoque);
+            _serviceBus.SendMessage(produto, "produtoinsertqueue");
 
             return produtoViewModel;
 
@@ -73,7 +90,8 @@ namespace Ecommerce.Application.Services
             if (produto is null)
                 throw RequisicaoInvalidaException.PorMotivo($"O Produto {entidade.Id} não está cadastrado na Base");
 
-            _produtoRepository.Alterar(entidade);
+            //_produtoRepository.Alterar(entidade);
+            _serviceBus.SendMessage(entidade, "produtoupdatequeue");
 
             return entidade;
         }
