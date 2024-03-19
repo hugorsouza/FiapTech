@@ -74,7 +74,7 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
             LEFT JOIN dbo.Cliente C on U.Id = C.Id
             LEFT JOIN dbo.Funcionario F on U.Id = F.Id
             WHERE 
-                u.EmailNormalizado = @Email";
+                u.Email = @Email";
         return Connection.Query<Usuario, Cliente, Funcionario, Usuario>(sql, 
             map: (usuario, cliente, funcionario) =>
             {

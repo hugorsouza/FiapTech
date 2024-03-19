@@ -14,8 +14,8 @@ namespace Ecommerce.Infra.Auth.Extensions
             var perfil = PerfilUsuarioExtensions.ObterClaimPerfil(usuario.Perfil);
             var claims = new List<Claim> {
                 new(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
-                new(JwtRegisteredClaimNames.UniqueName, usuario.EmailNormalizado),
-                new(JwtRegisteredClaimNames.Email, usuario.EmailNormalizado),
+                new(JwtRegisteredClaimNames.UniqueName, usuario.Email),
+                new(JwtRegisteredClaimNames.Email, usuario.Email),
                 new(JwtRegisteredClaimNames.Name, usuario.NomeExibicao),
                 new(ClaimsIdentity.DefaultNameClaimType, usuario.NomeExibicao),
                 new(ClaimsIdentity.DefaultRoleClaimType, perfil)
