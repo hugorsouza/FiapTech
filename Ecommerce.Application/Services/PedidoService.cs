@@ -46,41 +46,41 @@ namespace Ecommerce.Application.Services
 
         public PedidoModel CadastrarPedido(int produtoId, int quantidade)
         {
-            //var consultaUser = _usuarioManager.ObterUsuarioAtual();
-            //if (consultaUser == null)
-            //    throw new Exception($"Usuario ID não localizado");
+            var consultaUser = _usuarioManager.ObterUsuarioAtual();
+            if (consultaUser == null)
+                throw new Exception($"Usuario ID não localizado");
 
             var consultaProduto = _produtoRepository.ObterPorId(produtoId);
             if (consultaProduto == null)
                 throw new Exception($"ProdutoId {produtoId} não localizado");
 
-            //var consultaCliente = _clienteRepository.ObterPorId(consultaUser.Id);
-            //var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
+            var consultaCliente = _clienteRepository.ObterPorId(consultaUser.Id);
+            var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
 
-            //if (consultaFuncionario == null && consultaCliente == null)
-            //    throw new Exception($"ClienteId ou FuncionarioId {consultaUser.Id} não localizado");
+            if (consultaFuncionario == null && consultaCliente == null)
+                throw new Exception($"ClienteId ou FuncionarioId {consultaUser.Id} não localizado");
 
-            //var documento = "";
-            //if(consultaCliente == null)
-            //{
-            //    documento = consultaFuncionario.Cpf;
-            //}
-            //else
-            //{
-            //    documento = consultaCliente.Cpf;
-            //}
+            var documento = "";
+            if (consultaCliente == null)
+            {
+                documento = consultaFuncionario.Cpf;
+            }
+            else
+            {
+                documento = consultaCliente.Cpf;
+            }
 
             var pedido = new Pedido
             {
-                //UsuarioDocumento = documento,
-                //Usuario = consultaUser.NomeExibicao,
+                UsuarioDocumento = documento,
+                Usuario = consultaUser.NomeExibicao,
                 Descricao = consultaProduto.Descricao,
                 Quantidade = quantidade,
                 ValorUnitario = consultaProduto.Preco,
                 ValorTotal = consultaProduto.Preco * quantidade,
                 DataPedido = DateTime.UtcNow,
-                //TipoPedido = (int)consultaUser.Perfil,
-                //TipoPedidoDescricao = consultaUser.Perfil.ToString(),
+                TipoPedido = (int)consultaUser.Perfil,
+                TipoPedidoDescricao = consultaUser.Perfil.ToString(),
                 Status = 1,
                 StatusDescricao = "Descrição teste"
             };

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controller
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class CategoriaController : ControllerBase
@@ -83,7 +83,7 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="categoria"></param>
         /// <returns></returns>
-       // [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
+        [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
         [ProducesResponseType(typeof(Categoria), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]
