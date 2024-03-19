@@ -1,4 +1,5 @@
-﻿using Ecommerce.Domain.Entity;
+﻿using Ecommerce.Domain.Entities.Produtos;
+using Ecommerce.Domain.Entity;
 using System.ComponentModel.DataAnnotations;
 
 namespace Ecommerce.Domain.Entities.Estoque
@@ -42,5 +43,12 @@ namespace Ecommerce.Domain.Entities.Estoque
         [Required]
         [DataType(DataType.Currency, ErrorMessage = "Data de movimentação obrigatório")]
         public DateTime DataUltimaMovimentacao { get; set; }
+    }
+
+    public class ProdutoEstoque
+
+    {
+        public Produto Produto { get; set; }
+        public Estoque Estoque { get; set; }
     }
 }

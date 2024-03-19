@@ -1,6 +1,10 @@
 using Ecommerce.Consumer.Background.Queues.CategoriaQueue;
 using Ecommerce.Consumer.Background.Queues.FabricanteQueue;
+using Ecommerce.Consumer.Background.Queues.PedidoQueue;
+using Ecommerce.Consumer.Background.Queues.ProdutoQueue;
+using Ecommerce.Consumer.Background.QueuesPedidoQueue;
 using Ecommerce.Domain.Interfaces;
+using Ecommerce.Domain.Interfaces.Repository;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Infra.Dapper.Factory;
 using Ecommerce.Infra.Dapper.Interfaces;
@@ -19,7 +23,10 @@ builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>()
                 .AddScoped<ITransactionService>(sp => sp.GetService<UnitOfWork>())
                 .AddScoped<IUnitOfWork>(sp => sp.GetService<UnitOfWork>())
                 .AddScoped<ICategoriaRepository, CategoriaRepository>()
-                .AddScoped<IFabricanteRepository, FabricanteRepository>();
+                .AddScoped<IFabricanteRepository, FabricanteRepository>()
+                .AddScoped<IProdutoRepository, ProdutoRepository>()
+                .AddScoped<IPedidoRepository, PedidoRepository>()
+                ;
 
 builder.Services.AddControllers();
 
@@ -43,6 +50,12 @@ IHost host = Host.CreateDefaultBuilder(args)
             x.AddConsumer<FabricanteInsertQueue>();
             x.AddConsumer<FabricanteUpdateQueue>();
 
+            x.AddConsumer<ProdutoInsertQueue>();
+            x.AddConsumer<ProdutoUpdateQueue>();
+
+            x.AddConsumer<PedidoInsertQueue>();
+            x.AddConsumer<PedidodeleteQueue>();
+
             x.UsingAzureServiceBus((context, cfg) =>
             {
                 cfg.Host(connServiceBus);
@@ -52,6 +65,13 @@ IHost host = Host.CreateDefaultBuilder(args)
 
                 cfg.ReceiveEndpoint("fabricanteinsertqueue", e => { e.ConfigureConsumer<FabricanteInsertQueue>(context); });
                 cfg.ReceiveEndpoint("fabricanteupdatequeue", e => { e.ConfigureConsumer<FabricanteUpdateQueue>(context); });
+
+                cfg.ReceiveEndpoint("produtoinsertqueue", e => { e.ConfigureConsumer<ProdutoInsertQueue>(context); });
+                cfg.ReceiveEndpoint("produtoupdatequeue", e => { e.ConfigureConsumer<ProdutoUpdateQueue>(context); });
+
+                cfg.ReceiveEndpoint("pedidoinsertqueue", e => { e.ConfigureConsumer<PedidoInsertQueue>(context); });
+                cfg.ReceiveEndpoint("pedidodeletequeue", e => { e.ConfigureConsumer<PedidodeleteQueue>(context); });
+
 
 
             });

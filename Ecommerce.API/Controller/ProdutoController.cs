@@ -11,7 +11,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ecommerce.API.Controller
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class ProdutoController : ControllerBase
@@ -29,7 +29,7 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="produto"></param>
         /// <returns></returns>
-        [Authorize(Policy = CustomPolicies.SomenteAdministrador)]
+        //[Authorize(Policy = CustomPolicies.SomenteAdministrador)]
         [ProducesResponseType(typeof(ProdutoViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [Route("Cadastrar")]
@@ -86,7 +86,7 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="produto"></param>
         /// <returns></returns>
-        [Authorize(Policy = CustomPolicies.SomenteAdministrador)]
+        //[Authorize(Policy = CustomPolicies.SomenteAdministrador)]
         [ProducesResponseType(typeof(Produto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]

@@ -102,9 +102,27 @@ namespace Ecommerce.Infra.Dapper.Repositories
             dbConnection.Query(query, new { Id = idProduto });
         }
 
-        public override void Cadastrar(Produto entidade)
+        public override void Cadastrar(Produto produto)
         {
-            throw new NotImplementedException();
+            using var dbConnection = new SqlConnection(ConnectionString);
+
+           
+            try
+            {
+
+                var query1 = @"INSERT INTO PRODUTO (Nome, Ativo, Preco, Descricao, FabricanteId, CategoriaId, UrlImagem) 
+                        values (@Nome, @Ativo, @Preco, @Descricao, @FabricanteId, @CategoriaId, @UrlImagem);";
+
+
+                dbConnection.Execute(query1, produto);
+
+                
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
         }
     }
 }
