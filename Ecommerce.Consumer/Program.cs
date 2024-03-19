@@ -1,4 +1,5 @@
 using Ecommerce.Consumer.Background.Queues.CategoriaQueue;
+using Ecommerce.Consumer.Background.Queues.ClienteQueue;
 using Ecommerce.Consumer.Background.Queues.FabricanteQueue;
 using Ecommerce.Consumer.Background.Queues.PedidoQueue;
 using Ecommerce.Consumer.Background.Queues.ProdutoQueue;
@@ -50,6 +51,9 @@ IHost host = Host.CreateDefaultBuilder(args)
             x.AddConsumer<FabricanteInsertQueue>();
             x.AddConsumer<FabricanteUpdateQueue>();
 
+            x.AddConsumer<ClienteInsertQueue>();
+            x.AddConsumer<ClienteUpdateQueue>();
+
             x.AddConsumer<ProdutoInsertQueue>();
             x.AddConsumer<ProdutoUpdateQueue>();
 
@@ -65,13 +69,6 @@ IHost host = Host.CreateDefaultBuilder(args)
 
                 cfg.ReceiveEndpoint("fabricanteinsertqueue", e => { e.ConfigureConsumer<FabricanteInsertQueue>(context); });
                 cfg.ReceiveEndpoint("fabricanteupdatequeue", e => { e.ConfigureConsumer<FabricanteUpdateQueue>(context); });
-
-                cfg.ReceiveEndpoint("produtoinsertqueue", e => { e.ConfigureConsumer<ProdutoInsertQueue>(context); });
-                cfg.ReceiveEndpoint("produtoupdatequeue", e => { e.ConfigureConsumer<ProdutoUpdateQueue>(context); });
-
-                cfg.ReceiveEndpoint("pedidoinsertqueue", e => { e.ConfigureConsumer<PedidoInsertQueue>(context); });
-                cfg.ReceiveEndpoint("pedidodeletequeue", e => { e.ConfigureConsumer<PedidodeleteQueue>(context); });
-
 
 
             });

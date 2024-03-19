@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ecommerce.API.Controller;
 
 [Authorize(Roles = $"{PerfilUsuarioExtensions.Cliente},{PerfilUsuarioExtensions.Funcionario}")]
-[ApiController]
+//[ApiController]
 [Route("api/[controller]")]
 public class ClienteController : ControllerBase
 {
@@ -71,6 +71,7 @@ public class ClienteController : ControllerBase
     /// </summary>
     /// <param name="cadastro"></param>
     /// <returns></returns>
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(ClienteViewModel), StatusCodes.Status200OK)]

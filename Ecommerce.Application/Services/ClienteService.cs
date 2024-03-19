@@ -6,6 +6,7 @@ using Ecommerce.Domain.Entities.Pessoas.Fisica;
 using Ecommerce.Domain.Exceptions;
 using Ecommerce.Domain.Interfaces;
 using Ecommerce.Domain.Interfaces.Repository;
+using Ecommerce.Infra.ServiceBus.Interface;
 using FluentValidation;
 
 namespace Ecommerce.Application.Services;
@@ -17,18 +18,21 @@ public class ClienteService : IClienteService
     private readonly IValidator<CadastroClienteModel> _validatorCadastro;
     private readonly IValidator<AlterarClienteModel> _validatorAlteracao;
     private readonly ITransactionService _transactionService;
-    
+    private readonly IServiceBus _serviceBus;
+
     public ClienteService(IClienteRepository clienteRepository,
         IValidator<CadastroClienteModel> validatorCadastro,
         IUsuarioManager usuarioManager,
         ITransactionService transactionService,
-        IValidator<AlterarClienteModel> validatorAlteracao)
+        IValidator<AlterarClienteModel> validatorAlteracao,
+        IServiceBus serviceBus)
     {
         _clienteRepository = clienteRepository;
         _validatorCadastro = validatorCadastro;
         _usuarioManager = usuarioManager;
         _transactionService = transactionService;
         _validatorAlteracao = validatorAlteracao;
+        _serviceBus = serviceBus;
     }
 
     public async Task<ClienteViewModel> Cadastrar(CadastroClienteModel model)
@@ -41,7 +45,9 @@ public class ClienteService : IClienteService
         var usuario = _usuarioManager.CadastrarUsuario(_usuarioManager.BuildUsuarioParaCliente(model));
         var cliente = BuildCliente(model, usuario);
         _clienteRepository.Cadastrar(cliente);
-        
+
+        _serviceBus.SendMessage(cliente, "clienteinsertqueue");
+
         _transactionService.Commit();
         
         var clienteViewModel = BuildViewModel(cliente);
@@ -66,6 +72,9 @@ public class ClienteService : IClienteService
         var agora = DateTime.Now;
         var usuario = _usuarioManager.ObterUsuarioAtual();
         var cliente = usuario.Cliente;
+
+        _serviceBus.SendMessage(model, "clienteupdatequeue");
+
         return await AlterarCliente(model, cliente, agora);
     }
 
