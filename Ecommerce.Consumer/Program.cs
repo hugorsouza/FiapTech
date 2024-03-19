@@ -27,6 +27,7 @@ builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>()
                 .AddScoped<IFabricanteRepository, FabricanteRepository>()
                 .AddScoped<IProdutoRepository, ProdutoRepository>()
                 .AddScoped<IPedidoRepository, PedidoRepository>()
+                .AddScoped<IClienteRepository, ClienteRepository>()
                 ;
 
 builder.Services.AddControllers();
