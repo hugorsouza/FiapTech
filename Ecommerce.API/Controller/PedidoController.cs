@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controller
 {
-    [Authorize(Roles = $"{PerfilUsuarioExtensions.Cliente},{PerfilUsuarioExtensions.Funcionario}")]
+   // [Authorize(Roles = $"{PerfilUsuarioExtensions.Cliente},{PerfilUsuarioExtensions.Funcionario}")]
     [Route("api/[Controller]")]
     [ApiController]
     public class PedidoController : ControllerBase
@@ -116,7 +116,7 @@ namespace Ecommerce.API.Controller
         /// Deletar pedido
         /// Requer permissão de administrador.
         /// </summary>
-        [Authorize(Policy = CustomPolicies.SomenteAdministrador)]
+       // [Authorize(Policy = CustomPolicies.SomenteAdministrador)]
         [HttpDelete]
         [Route("DeletarPedido/{idPedido}")]
         public IActionResult DeletarPedido(int idPedido)
