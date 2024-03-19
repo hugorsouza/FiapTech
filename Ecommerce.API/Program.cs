@@ -1,28 +1,84 @@
+using System.Globalization;
+using Ecommerce.API.Extensions;
+using Ecommerce.API.Middleware;
+using Ecommerce.Application;
 using Ecommerce.Application.Services;
 using Ecommerce.Application.Services.Interfaces;
+using Ecommerce.Application.Services.Interfaces.Estoque;
+using Ecommerce.Application.Services.Interfaces.Pedido;
+using Ecommerce.Application.Services.Interfaces.Pessoas;
+using Ecommerce.Infra.Auth.Extensions;
+using Ecommerce.Infra.Dapper.Extensions;
+using Ecommerce.Infra.Dapper.Seed;
+using Ecommerce.Infra.Logging.Logging;
+using Ecommerce.Infra.ServiceBus.Interface;
+using Ecommerce.Infra.ServiceBus.Service;
+using FluentValidation;
+using MassTransit;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Configuration;
+using IHost = Microsoft.Extensions.Hosting.IHost;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();  
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("pt-BR");
+builder.Services.AddControllers();
+builder.Services.AddDocumentacaoApi();
 
-//builder.Services.AddDbContext<ApplicationDbContext>(ServiceLifetime.Scoped);
-builder.Services.AddScoped<IFazerPedidoService, FazerPedidoService>();
+builder.Services
+    .AddRepositories()
+    .AddAutenticacaoJwt(builder.Configuration)
+    .AddValidatorsFromAssemblyContaining<IApplicationAssemblyMarker>()
+    .AddScoped<IClienteService, ClienteService>()
+    .AddScoped<IFuncionarioService, FuncionarioService>()
+    .AddScoped<IPedidoService, PedidoService>()
+    .AddScoped<IEstoqueService, EstoqueService>()
+    .AddScoped<ExceptionMiddleware>()
+    .AddScoped<IServiceBus,ServiceBus>()
+    .AddAppServices();
+builder.Logging.ClearProviders()
+    .AddProvider(new CustomLoggerProvider( new CustomLoggerProviderConfiguration(), builder.Configuration));
+
+
+IHost host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((hostContext, services) =>
+    {
+        var configuration = builder.Configuration;
+        var connServiceBus = "Endpoint=sb://sb-fiap-tech.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Ql9xGRVUDFW3XcKYq/spXyQ+tZcstUVMC+ASbF+wlOs=";
+        //configuration.GetSection("MassTransit:ServiceBus:ConnectionString").Value;
+
+        //var serviceProvider = new ServiceCollection()
+
+        builder.Services.AddMassTransit()
+        .AddMassTransit((x =>
+        {
+            x.UsingAzureServiceBus((context, cfg) =>
+            {
+                cfg.Host(connServiceBus);
+
+                cfg.ConfigureEndpoints(context);
+            });
+        }));
+
+        builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["ApplicationInsights:InstrumentationKey"]);
+
+    }).Build();
+
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
+
+app.UseDocumentacaoApi();
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    await app.SeedDatabase();
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
