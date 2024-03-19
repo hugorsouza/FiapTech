@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.API.Controller
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class FabricanteController : ControllerBase
@@ -28,7 +28,7 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="fabricante"></param>
         /// <returns></returns>
-       // [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
+        [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
         [ProducesResponseType(typeof(FabricanteViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPost]
@@ -85,7 +85,7 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="fabricante"></param>
         /// <returns></returns>
-      //  [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
+        [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
         [ProducesResponseType(typeof(Fabricante), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]

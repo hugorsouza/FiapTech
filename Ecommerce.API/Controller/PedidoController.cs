@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.API.Controller
 {
-   // [Authorize(Roles = $"{PerfilUsuarioExtensions.Cliente},{PerfilUsuarioExtensions.Funcionario}")]
+    [Authorize(Roles = $"{PerfilUsuarioExtensions.Cliente},{PerfilUsuarioExtensions.Funcionario}")]
     [Route("api/[Controller]")]
     [ApiController]
     public class PedidoController : ControllerBase
