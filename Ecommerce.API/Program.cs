@@ -1,4 +1,3 @@
-
 using System.Globalization;
 using Ecommerce.API.Extensions;
 using Ecommerce.API.Middleware;
@@ -16,7 +15,10 @@ using Ecommerce.Infra.ServiceBus.Interface;
 using Ecommerce.Infra.ServiceBus.Service;
 using FluentValidation;
 using MassTransit;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Configuration;
 using IHost = Microsoft.Extensions.Hosting.IHost;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,12 +58,10 @@ IHost host = Host.CreateDefaultBuilder(args)
                 cfg.Host(connServiceBus);
 
                 cfg.ConfigureEndpoints(context);
-
             });
-
-            
-           
         }));
+
+        builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["ApplicationInsights:InstrumentationKey"]);
 
     }).Build();
 
