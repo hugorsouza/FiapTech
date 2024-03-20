@@ -5,6 +5,13 @@ Espaço destinado para tech challenges referente ao curso de pós-graduação.
 * Hugo Souza - rm351477 
 * Lucas Silva - rm351454
 
+## 💻 FASE 3 - QUALIDADE E SEGURANÇA NO DESENVOLVIMENTO
+Essa fase do projeto contém, implementações: 
+* ServiceBus com MassTransit
+* Application Insights 
+  A cada acionamento de Inserts e Updates nos endpoints:
+    Produto, Cliente, Categoria, Pedido e Fabricante, é enviado requisição via fila para o Ecommerce.Consumer, concluir a operação no base de dados SQL Ecommerce.
+
 # Documentação 📜
 
 Documentação: [https://docs.google.com/document/d/1njXBAbwb_Z5NDJMHJjPWvT2fH1nOTIHqpGJ67utbi38/edit?usp=sharing](https://github.com/hugorsouza/FiapTechChallenge/commit/d8c9de3ffbbf26429eed97a011f3bb27bfb6489a)
