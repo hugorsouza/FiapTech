@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Ecommerce.Domain.Entities.Produtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Ecommerce.Domain.Entity;
 
-namespace Ecommerce.Domain.Entities.Produtos
+namespace Ecommerce.Domain.EntitiesEF.Produtos
 {
     public class Fabricante : Entidade
     {
         public Fabricante() : base() { }
-        public Fabricante(string nome, string cnpj ,bool ativo, Endereco endereco)
+        public Fabricante(string nome, string cnpj, bool ativo, Endereco endereco)
         {
             CNPJ = cnpj;
             Nome = nome;

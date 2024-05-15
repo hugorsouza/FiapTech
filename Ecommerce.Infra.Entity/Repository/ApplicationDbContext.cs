@@ -1,4 +1,4 @@
-﻿using Ecommerce.Domain.EntitiesEF.Produtos;
+﻿using Ecommerce.Domain.Entities.Produtos;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Ecommerce.Infra.Entity.Repository
         public DbSet<Endereco> MyProperty { get; set; }
 
 
-        protected override void OnModelCreating (ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
             modelBuilder.Entity<Endereco>(e =>
@@ -36,13 +36,13 @@ namespace Ecommerce.Infra.Entity.Repository
                 e.Property(p => p.Estado).HasColumnType("Varchar(100)").IsRequired();
             });
 
-        //public required string Logradouro { get; set; }
-        //public required string Numero { get; set; }
-        //public required string CEP { get; set; }
-        //public required string Bairro { get; set; }
-        //public required string Cidade { get; set; }
-        //public required string Estado { get; set; }
-    });
+            //public required string Logradouro { get; set; }
+            //public required string Numero { get; set; }
+            //public required string CEP { get; set; }
+            //public required string Bairro { get; set; }
+            //public required string Cidade { get; set; }
+            //public required string Estado { get; set; }
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionBuilder)

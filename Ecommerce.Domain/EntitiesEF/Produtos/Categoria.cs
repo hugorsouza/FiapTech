@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Ecommerce.Domain.Entity;
 
-namespace Ecommerce.Domain.Entities.Produtos
+namespace Ecommerce.Domain.EntitiesEF.Produtos
 {
     public class Categoria : Entidade
     {
@@ -24,7 +23,7 @@ namespace Ecommerce.Domain.Entities.Produtos
         {
             Descricao = descricao;
             Nome = nome;
-            Ativo= ativo;
+            Ativo = ativo;
         }
 
 

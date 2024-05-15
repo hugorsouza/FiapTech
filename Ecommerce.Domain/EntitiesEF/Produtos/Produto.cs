@@ -4,9 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Ecommerce.Domain.Entity;
 
-namespace Ecommerce.Domain.Entities.Produtos
+namespace Ecommerce.Domain.EntitiesEF.Produtos
 {
     public class Produto : Entidade
     {

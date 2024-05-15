@@ -9,15 +9,16 @@ namespace Ecommerce.Domain.EntitiesEF.Produtos
 {
     public class Endereco
     {
-        
+        [JsonIgnore]
         public int Id { get; set; }
-        public required string Logradouro { get; set; }
-        public required string Numero { get; set; }
-        public required string CEP { get; set; }
-        public required string Bairro { get; set; }
-        public required string Cidade { get; set; }
-        public required string Estado { get; set; }        
-        
+        public string Logradouro { get; set; }
+        public string Numero { get; set; }
+        public string CEP { get; set; }
+        public string Bairro { get; set; }
+        public string Cidade { get; set; }
+        public string Estado { get; set; }
+        [JsonIgnore]
+        public int EntidadeId { get; set; }
 
     }
 }
