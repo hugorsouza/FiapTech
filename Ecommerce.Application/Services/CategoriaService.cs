@@ -25,6 +25,8 @@ namespace Ecommerce.Application.Services
            
             var categoria = ObterPorId(model.Id);
 
+            var categoria = ObterPorId(entity.Id);
+
             if (categoria is null)
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {model.Id} não está cadastrada na Base!");    
 

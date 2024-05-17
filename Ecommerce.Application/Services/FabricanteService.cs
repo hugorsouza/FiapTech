@@ -29,11 +29,11 @@ namespace Ecommerce.Application.Services
             var fabricante = ObterPorId(entidade.Id);
 
             if (fabricante is null)
-                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entidade.Id} não está cadastrado na Base");
+                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entity.Id} não está cadastrado na Base");
 
             //_fabricanteRepository.Alterar(entidade);
 
-            _serviceBus.SendMessage(entidade, "fabricanteupdatequeue");
+            _serviceBus.SendMessage(entity, "fabricanteupdatequeue");
 
             return null;
         }
@@ -99,6 +99,16 @@ namespace Ecommerce.Application.Services
                 return null;
 
             return new Fabricante(model.Nome,model.CNPJ, model.Ativo, model.Endereco);
+
+        }
+
+
+        private FabricanteModelResult BuidModelResult(Fabricante model)
+        {
+            if (model is null)
+                return null;
+
+            return new FabricanteModelResult(model.Nome,  model.Ativo, model.CNPJ);
 
         }
 
