@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Application.Services;
 using Ecommerce.Domain.Entities.Pessoas.Autenticacao;
 using Ecommerce.Domain.Entities.Produtos;
@@ -28,8 +29,8 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="fabricante"></param>
         /// <returns></returns>
-        [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
-        [ProducesResponseType(typeof(FabricanteViewModel), StatusCodes.Status200OK)]
+        //[Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
+        [ProducesResponseType(typeof(FabricanteModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Route("Cadastrar")]
@@ -45,7 +46,7 @@ namespace Ecommerce.API.Controller
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]        
-        [ProducesResponseType(typeof(Categoria), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FabricanteModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet]
@@ -90,7 +91,7 @@ namespace Ecommerce.API.Controller
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]
         [Route("Alterar")]
-        public IActionResult Alterar([FromBody] Fabricante fabricante)
+        public IActionResult Alterar([FromBody] FabricanteViewModel fabricante)
         {
             var result = _fabricanteservice.Alterar(fabricante);
 

@@ -5,6 +5,10 @@ using Ecommerce.Domain.Services;
 using Ecommerce.Domain.Exceptions;
 using FluentValidation.Validators;
 using Ecommerce.Infra.ServiceBus.Interface;
+using Ecommerce.Domain.Interfaces.Repository;
+using Ecommerce.Domain.Interfaces.EFRepository;
+using Ecommerce.Application.Model.Pessoas.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 
 namespace Ecommerce.Application.Services
 {
@@ -20,21 +24,23 @@ namespace Ecommerce.Application.Services
             _serviceBus = serviceBus;
         }
 
-        public Fabricante Alterar(Fabricante entidade)
+        public FabricanteModelResult Alterar(FabricanteViewModel entidade)
         {
-            var fabricante = ObterPorId(entidade.Id);
+            var entity = BuidFabricante(entidade);
 
-            if (fabricante is null)
-                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entidade.Id} não está cadastrado na Base");
+            var categoria = ObterPorId(entity.Id);
+
+            if (categoria is null)
+                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entity.Id} não está cadastrado na Base");
 
             //_fabricanteRepository.Alterar(entidade);
 
-            _serviceBus.SendMessage(entidade, "fabricanteupdatequeue");
+            _serviceBus.SendMessage(entity, "fabricanteupdatequeue");
 
-            return null;
+            return BuidModelResult(entity);
         }
 
-        public FabricanteViewModel Cadastrar(FabricanteViewModel model)
+        public FabricanteModelResult Cadastrar(FabricanteViewModel model)
         {
             var fabricante = BuidFabricante(model);
 
@@ -46,16 +52,15 @@ namespace Ecommerce.Application.Services
             if (!validaCNPJ(fabricante.CNPJ))
                 throw RequisicaoInvalidaException.PorMotivo($"CNPJ {fabricante.CNPJ} inválido");
 
-            if (ObterTodos().Where(x=> x.CNPJ != null)
-                .Any(x=> x.CNPJ.Equals(fabricante.CNPJ)))
+            if (ObterTodos().Where(x => x.CNPJ != null)
+                .Any(x => x.CNPJ.Equals(fabricante.CNPJ)))
                 throw RequisicaoInvalidaException.PorMotivo($"O fabrinte {fabricante.CNPJ} Já está cadastrado na base!");
 
-            //_fabricanteRepository.Cadastrar(fabricante);
+            fabricante.Endereco = endereco;
+
             _serviceBus.SendMessage(fabricante, "fabricanteinsertqueue");
 
-            var fabricanteViewModel = BuildViewModel(fabricante);
-
-            return fabricanteViewModel;
+            return BuidModelResult(fabricante);
         }
 
 
@@ -64,14 +69,22 @@ namespace Ecommerce.Application.Services
             throw new NotImplementedException();
         }
 
-        public  Fabricante ObterPorId(int id)
+        public FabricanteModelResult ObterPorId(int id)
         {
-            return _fabricanteRepository.ObterPorId(id);
+            return BuidModelResult(_fabricanteEfRepository.ObterPorId(id));
         }
 
-        public  IList<Fabricante> ObterTodos()
+        public IList<FabricanteModelResult> ObterTodos()
         {
-            return _fabricanteRepository.ObterTodos();
+            var listResult = new List<FabricanteModelResult>();
+
+            var result = _fabricanteRepository.ObterTodos();
+
+            foreach (var item in result)
+                listResult.Add(BuidModelResult(item));
+
+            return listResult;
+            
         }
 
         private FabricanteViewModel BuildViewModel(Fabricante fabricante)
@@ -88,6 +101,16 @@ namespace Ecommerce.Application.Services
                 return null;
 
             return new Fabricante(model.Nome,model.CNPJ, model.Ativo, model.Endereco);
+
+        }
+
+
+        private FabricanteModelResult BuidModelResult(Fabricante model)
+        {
+            if (model is null)
+                return null;
+
+            return new FabricanteModelResult(model.Nome,  model.Ativo, model.CNPJ);
 
         }
 

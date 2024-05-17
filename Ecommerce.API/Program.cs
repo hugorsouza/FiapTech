@@ -35,7 +35,12 @@ builder.Services
     .AddScoped<IPedidoService, PedidoService>()
     .AddScoped<IEstoqueService, EstoqueService>()
     .AddScoped<ExceptionMiddleware>()
-    .AddScoped<IServiceBus,ServiceBus>()
+    .AddScoped<IServiceBus, ServiceBus>()
+    //.AddScoped(typeof(Ecommerce.Domain.Interfaces.EFRepository.IRepository<>), typeof(Repository<>))
+
+    .AddScoped<IFabricanteEfRepository, FabricanteEfRepository>()
+    .AddScoped<ICategoriaEfRepository, CategoriaEfRepository>()
+    .AddScoped<IProdutoEfRepository, ProdutoEfRepository>()
     .AddAppServices();
 builder.Logging.ClearProviders()
     .AddProvider(new CustomLoggerProvider( new CustomLoggerProviderConfiguration(), builder.Configuration));

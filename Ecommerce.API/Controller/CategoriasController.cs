@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Domain.Entities.Pessoas.Autenticacao;
 using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Services;
@@ -27,7 +28,7 @@ namespace Ecommerce.API.Controller
         /// <param name="categoria"></param>
         /// <returns></returns>
         //[Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
-        [ProducesResponseType(typeof(CategoriaViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoriaModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Route("Cadastrar")]
@@ -44,7 +45,7 @@ namespace Ecommerce.API.Controller
         /// <returns></returns>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(typeof(Categoria), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CategoriaModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Route("ObterPorId/{id}")]
@@ -64,7 +65,7 @@ namespace Ecommerce.API.Controller
         /// <returns></returns>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Categoria>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<CategoriaModelResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Route("ObterPorTodos")]
@@ -83,12 +84,12 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="categoria"></param>
         /// <returns></returns>
-        [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
-        [ProducesResponseType(typeof(Categoria), StatusCodes.Status200OK)]
+       // [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
+        [ProducesResponseType(typeof(CategoriaModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]
         [Route("Alterar")]
-        public IActionResult Alterar([FromBody] Categoria categoria)
+        public IActionResult Alterar([FromBody] CategoriaViewModel categoria)
         {
             var result = _categoriaservice.Alterar(categoria);
 
