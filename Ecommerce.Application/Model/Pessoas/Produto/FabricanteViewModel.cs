@@ -9,14 +9,20 @@ namespace Ecommerce.Application.Model.Produto
 {
     public class FabricanteViewModel
     {
-        public FabricanteViewModel(string nome, bool ativo, string cnpj, Endereco endereco)
+        public FabricanteViewModel(string nome, bool ativo, string cnpj, int id)
         {
             Nome = nome;
             Ativo = ativo;
             CNPJ = cnpj;
-            Endereco = endereco;
+            Id = id;
+            
         }
-        
+        public FabricanteViewModel()
+        {
+
+        }
+
+        public int Id { get; set; }
         public string Nome { get; set; }
         public bool Ativo { get; set; }
         public string CNPJ { get; set; }

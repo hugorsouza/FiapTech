@@ -21,15 +21,23 @@ namespace Ecommerce.Application.Services
 
         public Categoria Alterar(Categoria model)
         {
+           
             var categoria = ObterPorId(model.Id);
 
             if (categoria is null)
-                throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {model.Id} não está cadastrada na Base!");
+                throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {model.Id} não está cadastrada na Base!");    
 
-            //_categoriaRepository.Alterar(model);
-            _serviceBus.SendMessage(model, "categoriaupdatequeue");
+            var obj = _categoriaEfRepository.ObterPorId(model.Id);
 
-            return model;
+            obj.Descricao = model.Descricao;
+            obj.Nome = model.Nome;
+            obj.Ativo = model.Ativo;
+            
+            _categoriaEfRepository.Alterar(obj);
+
+           // _serviceBus.SendMessage(model, "categoriaupdatequeue");
+
+            return BuildModelResult(obj);
         }
 
         public CategoriaViewModel Cadastrar(CategoriaViewModel model)
