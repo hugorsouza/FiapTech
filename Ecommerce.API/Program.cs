@@ -74,6 +74,7 @@ if (app.Environment.IsDevelopment())
     await app.SeedDatabase();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
