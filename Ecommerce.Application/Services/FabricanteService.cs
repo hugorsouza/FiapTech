@@ -26,18 +26,16 @@ namespace Ecommerce.Application.Services
 
         public FabricanteModelResult Alterar(FabricanteViewModel entidade)
         {
-            var entity = BuidFabricante(entidade);
+            var fabricante = ObterPorId(entidade.Id);
 
-            var categoria = ObterPorId(entity.Id);
-
-            if (categoria is null)
-                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entity.Id} não está cadastrado na Base");
+            if (fabricante is null)
+                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entidade.Id} não está cadastrado na Base");
 
             //_fabricanteRepository.Alterar(entidade);
 
-            _serviceBus.SendMessage(entity, "fabricanteupdatequeue");
+            _serviceBus.SendMessage(entidade, "fabricanteupdatequeue");
 
-            return BuidModelResult(entity);
+            return null;
         }
 
         public FabricanteModelResult Cadastrar(FabricanteViewModel model)
@@ -92,7 +90,7 @@ namespace Ecommerce.Application.Services
             if (fabricante is null)
                 return null;
 
-            return new FabricanteViewModel(fabricante.Nome, fabricante.Ativo, fabricante.CNPJ);
+            return new FabricanteViewModel(fabricante.Nome, fabricante.Ativo, fabricante.CNPJ, fabricante.Id);
         }
 
         private Fabricante BuidFabricante(FabricanteViewModel model)
