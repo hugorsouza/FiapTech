@@ -38,6 +38,9 @@ namespace Ecommerce.Application.Services
         {
             var fabricante = BuidFabricante(model);
 
+
+            var endereco = BuildEndereco(model.Endereco);
+
             fabricante.CNPJ = fabricante.ObterCnpjSemFormatacao();
 
             if (!validaCNPJ(fabricante.CNPJ))
