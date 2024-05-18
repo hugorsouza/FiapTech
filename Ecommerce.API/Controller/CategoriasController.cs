@@ -93,6 +93,7 @@ namespace Ecommerce.API.Controller
             var result = _categoriaservice.Alterar(categoria);
 
             return Ok(result);
+
         }        
     }
 }
