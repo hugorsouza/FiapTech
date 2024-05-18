@@ -55,6 +55,7 @@ namespace Ecommerce.Application.Services
             return fabricanteViewModel;
         }
 
+
         public  void Deletar(int id)
         {
             throw new NotImplementedException();
