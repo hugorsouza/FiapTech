@@ -53,9 +53,9 @@ namespace Ecommerce.Application.Services
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {categoria.Nome} Já está cadastrada!");
 
 
-           //_serviceBus.SendMessage(categoria, "categoriainsertqueue");
+           _serviceBus.SendMessage(categoria, "categoriainsertqueue");
 
-           _categoriaEfRepository.Cadastrar(categoria);
+          // _categoriaEfRepository.Cadastrar(categoria);
 
             return BuildModelResult(categoria);
         }
