@@ -5,6 +5,7 @@ using Ecommerce.Application.Services.Interfaces.Autenticacao;
 using Ecommerce.Domain.Entities.Estoque;
 using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Exceptions;
+using Ecommerce.Domain.Interfaces.EFRepository;
 using Ecommerce.Domain.Interfaces.Repository;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Domain.Services;
@@ -18,6 +19,7 @@ namespace Ecommerce.Application.Services
     {
 
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IProdutoEfRepository _produtoEfRepository;
         private readonly IEstoqueRepository _estoqueRepository;
         private readonly IUsuarioManager _usuarioManager;
         private readonly IFuncionarioRepository _funcionarioRepository;
@@ -26,6 +28,7 @@ namespace Ecommerce.Application.Services
 
         public ProdutoService(
             IProdutoRepository produtoRepository,
+            IProdutoEfRepository produtoEfRepository,
             IEstoqueRepository estoqueRepository,
             IUsuarioManager usuarioManager,
             IFuncionarioRepository funcionarioRepository,
@@ -38,6 +41,7 @@ namespace Ecommerce.Application.Services
             _funcionarioRepository = funcionarioRepository;
             _configuration = configuration;
             _serviceBus = serviceBus;
+            _produtoEfRepository = produtoEfRepository;
         }
 
         public ProdutoModelResult Cadastrar(ProdutoViewModel entidade)
@@ -51,36 +55,8 @@ namespace Ecommerce.Application.Services
 
             var produtoViewModel = BuildViewModel(produto);
 
-            //Add item no estoque
-            //var consultaUser = _usuarioManager.ObterUsuarioAtual();
-            // if (consultaUser == null)
-            //    throw RequisicaoInvalidaException.PorMotivo($"Funcionario {consultaUser.Id} não localizado");
 
-            // var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
-
-            //var estoque = new Estoque
-            //{
-            //    UsuarioDocumento = consultaFuncionario.Cpf,
-            //    Usuario = consultaUser.NomeExibicao,
-            //    QuantidadeAtual = 0,
-            //    DataUltimaMovimentacao = DateTime.UtcNow
-            //};
-
-
-            var estoque = new Estoque
-            {
-                UsuarioDocumento = "1342342354",
-                Usuario = "Pedro Alvares Cabral",
-                QuantidadeAtual = 0,
-                DataUltimaMovimentacao = DateTime.UtcNow
-            };
-
-            var produtoEstoque = new { ProdutoModelResult = produto, Estoque = estoque };
-
-
-            //var produtoId = await _produtoRepository.CadastrarAsync(produto, estoque);
-            _serviceBus.SendMessage(produto, "produtoinsertqueue");
-
+            _serviceBus.SendMessage(produto, "produtoinsertqueue");       
 
 
             return BuildModelResult(produto);
@@ -91,13 +67,14 @@ namespace Ecommerce.Application.Services
         {
             var entity = buidProduto(entidade);
 
-            var produto = ObterPorId(entity.Id);
+            var result = ObterPorId(entity.Id);
 
-            if (produto is null)
+            if (result is null)
                 throw RequisicaoInvalidaException.PorMotivo($"O Produto {entity.Id} não está cadastrado na Base");
 
-            //_produtoRepository.Alterar(entidade);
-            _serviceBus.SendMessage(entidade, "produtoupdatequeue");
+            var produto = buidProduto(entidade);
+            
+            _serviceBus.SendMessage(produto, "produtoupdatequeue");
 
             return BuildModelResult(produto);
         }
@@ -107,15 +84,17 @@ namespace Ecommerce.Application.Services
             throw new NotImplementedException();
         }
 
-        public Produto ObterPorId(int id)
+        public ProdutoModelResult ObterPorId(int id)
         {
-            return _produtoRepository.ObterPorId(id);
+            var result = _produtoEfRepository.ObterPorId(id);
+
+            return BuildModelResult(result);
         }
 
         public IList<ProdutoModelResult> ObterTodos()
         {
             var listResult = new List<ProdutoModelResult>();
-            var result = _produtoRepository.ObterTodos();
+            var result = _produtoEfRepository.ObterTodos();
 
             foreach (var item in result)
                 listResult.Add(BuildModelResult(item));
