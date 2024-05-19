@@ -1,32 +1,27 @@
 ﻿using Ecommerce.Application.Model.Pessoas.Produto;
-using Ecommerce.Domain.Entities.Produtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ecommerce.Application.Model.Produto
+namespace Ecommerce.Application.ModelResult.Produto
 {
-    public class FabricanteViewModel
+    public class FabricanteModelResult
     {
-        public FabricanteViewModel(string nome, bool ativo, string cnpj, int id)
+        public FabricanteModelResult(string nome, bool ativo, string cnpj)
         {
             Nome = nome;
             Ativo = ativo;
             CNPJ = cnpj;
-            Id = id;
 
         }
-        public FabricanteViewModel()
-        {
+       
 
-        }
-
-        public int Id { get; set; }
         public string Nome { get; set; }
         public bool Ativo { get; set; }
         public string CNPJ { get; set; }
         public EnderecoViewModel Endereco { get; set; }
+        
     }
 }

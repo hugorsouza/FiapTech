@@ -1,14 +1,15 @@
 ﻿
 using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Domain.Entities.Produtos;
 
 namespace Ecommerce.Domain.Services
 {
     public interface ICategoriaService
     {
-        CategoriaViewModel Cadastrar(CategoriaViewModel entidade);
-        Categoria ObterPorId(int id);
-        IList<Categoria> ObterTodos();
-        Categoria Alterar(Categoria entidade);
+        CategoriaModelResult Cadastrar(CategoriaViewModel entidade);
+        CategoriaModelResult ObterPorId(int id);
+        IList<CategoriaModelResult> ObterTodos();
+        CategoriaModelResult Alterar(CategoriaViewModel entidade);
     }
 }

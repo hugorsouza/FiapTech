@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Application.Model.Pessoas.Cadastro;
 using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Services;
 using Ecommerce.Infra.Auth.Constants;
@@ -17,8 +18,8 @@ namespace Ecommerce.API.Controller
     public class ProdutoController : ControllerBase
     {
         private readonly IProdutoService _produtoservice;
-        private readonly ILogger<CategoriaController> _logger;
-        public ProdutoController(IProdutoService produtoservice, ILogger<CategoriaController> logger)
+        private readonly ILogger<ProdutoController> _logger;
+        public ProdutoController(IProdutoService produtoservice, ILogger<ProdutoController> logger)
         {
             _produtoservice = produtoservice;
             _logger = logger;
@@ -30,13 +31,13 @@ namespace Ecommerce.API.Controller
         /// <param name="produto"></param>
         /// <returns></returns>
         //[Authorize(Policy = CustomPolicies.SomenteAdministrador)]
-        [ProducesResponseType(typeof(ProdutoViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProdutoModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [Route("Cadastrar")]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ProdutoViewModel produto)
+        public IActionResult Post([FromBody] ProdutoViewModel produto)
         {
-            var result = await _produtoservice.Cadastrar(produto);
+            var result = _produtoservice.Cadastrar(produto);
             return Ok(result);
         }
 
@@ -47,7 +48,7 @@ namespace Ecommerce.API.Controller
         /// <returns></returns>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(typeof(Produto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProdutoModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Route("ObterPorId/{id}")]
@@ -66,7 +67,7 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
-        [ProducesResponseType(typeof(IEnumerable<Produto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ProdutoModelResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet]
@@ -87,11 +88,11 @@ namespace Ecommerce.API.Controller
         /// <param name="produto"></param>
         /// <returns></returns>
         //[Authorize(Policy = CustomPolicies.SomenteAdministrador)]
-        [ProducesResponseType(typeof(Produto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProdutoModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]
         [Route("Alterar")]
-        public IActionResult Alterar([FromBody] Produto produto)
+        public IActionResult Alterar([FromBody] ProdutoViewModel produto)
         {
             var result = _produtoservice.Alterar(produto);
             return Ok(result);

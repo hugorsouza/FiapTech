@@ -1,7 +1,9 @@
 ﻿using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Application.Services;
 using Ecommerce.Domain.Entities.Pessoas.Autenticacao;
 using Ecommerce.Domain.Entities.Produtos;
+using Ecommerce.Domain.Interfaces.EFRepository;
 using Ecommerce.Domain.Services;
 using Ecommerce.Infra.Auth.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -10,17 +12,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.API.Controller
 {
-    [Authorize]
+   // [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class FabricanteController : ControllerBase
     {
         private readonly IFabricanteService _fabricanteservice;
         private readonly ILogger<CategoriaController> _logger;
+      
         public FabricanteController(IFabricanteService fabricanteservice, ILogger<CategoriaController> logger)
         {
             _fabricanteservice = fabricanteservice;
             _logger = logger;
+            
         }
 
         /// <summary>
@@ -28,8 +32,8 @@ namespace Ecommerce.API.Controller
         /// </summary>
         /// <param name="fabricante"></param>
         /// <returns></returns>
-        [Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
-        [ProducesResponseType(typeof(FabricanteViewModel), StatusCodes.Status200OK)]
+        //[Authorize(Roles = PerfilUsuarioExtensions.Funcionario)]
+        [ProducesResponseType(typeof(FabricanteModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Route("Cadastrar")]
@@ -45,7 +49,7 @@ namespace Ecommerce.API.Controller
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]        
-        [ProducesResponseType(typeof(Categoria), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FabricanteModelResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet]
@@ -90,7 +94,7 @@ namespace Ecommerce.API.Controller
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [HttpPut]
         [Route("Alterar")]
-        public IActionResult Alterar([FromBody] Fabricante fabricante)
+        public IActionResult Alterar([FromBody] FabricanteViewModel fabricante)
         {
             var result = _fabricanteservice.Alterar(fabricante);
 

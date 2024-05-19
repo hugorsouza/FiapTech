@@ -24,12 +24,14 @@ namespace Ecommerce.Domain.Entities.Produtos
         {
             Descricao = descricao;
             Nome = nome;
-            Ativo= ativo;
+            Ativo = ativo;
         }
 
 
 
         public string Descricao { get; set; }
+
+        public ICollection<Produto> Produtos { get; set; }
 
     }
 }

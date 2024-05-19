@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Domain.Entities.Produtos;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace Ecommerce.Domain.Services
 {
     public interface IFabricanteService
     {
-        FabricanteViewModel Cadastrar(FabricanteViewModel entidade);
-        Fabricante ObterPorId(int id);
-        IList<Fabricante> ObterTodos();
-        Fabricante Alterar(Fabricante entidade);
+        FabricanteModelResult Cadastrar(FabricanteViewModel entidade);
+        FabricanteModelResult ObterPorId(int id);
+        IList<FabricanteModelResult> ObterTodos();
+        FabricanteModelResult Alterar(FabricanteViewModel entidade);
         void Deletar(int id);
 
     }

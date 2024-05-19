@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Application.Services.Interfaces.Autenticacao;
 using Ecommerce.Domain.Entities.Estoque;
 using Ecommerce.Domain.Entities.Produtos;
@@ -24,14 +25,14 @@ namespace Ecommerce.Application.Services
         private readonly IServiceBus _serviceBus;
 
         public ProdutoService(
-            IProdutoRepository produtoRepository, 
-            IEstoqueRepository estoqueRepository, 
+            IProdutoRepository produtoRepository,
+            IEstoqueRepository estoqueRepository,
             IUsuarioManager usuarioManager,
             IFuncionarioRepository funcionarioRepository,
             IConfiguration configuration,
             IServiceBus serviceBus)
         {
-            _produtoRepository = produtoRepository; 
+            _produtoRepository = produtoRepository;
             _estoqueRepository = estoqueRepository;
             _usuarioManager = usuarioManager;
             _funcionarioRepository = funcionarioRepository;
@@ -39,7 +40,7 @@ namespace Ecommerce.Application.Services
             _serviceBus = serviceBus;
         }
 
-        public async Task<ProdutoViewModel> Cadastrar(ProdutoViewModel entidade)
+        public ProdutoModelResult Cadastrar(ProdutoViewModel entidade)
         {
             var produto = buidProduto(entidade);
 
@@ -52,10 +53,10 @@ namespace Ecommerce.Application.Services
 
             //Add item no estoque
             //var consultaUser = _usuarioManager.ObterUsuarioAtual();
-           // if (consultaUser == null)
+            // if (consultaUser == null)
             //    throw RequisicaoInvalidaException.PorMotivo($"Funcionario {consultaUser.Id} não localizado");
 
-           // var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
+            // var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
 
             //var estoque = new Estoque
             //{
@@ -74,36 +75,36 @@ namespace Ecommerce.Application.Services
                 DataUltimaMovimentacao = DateTime.UtcNow
             };
 
-            var produtoEstoque = new { Produto = produto, Estoque = estoque };
+            var produtoEstoque = new { ProdutoModelResult = produto, Estoque = estoque };
 
 
             //var produtoId = await _produtoRepository.CadastrarAsync(produto, estoque);
             _serviceBus.SendMessage(produto, "produtoinsertqueue");
 
-            return produtoViewModel;
+
+
+            return BuildModelResult(produto);
 
         }
 
-        public Produto Alterar(Produto entidade)
+        public ProdutoModelResult Alterar(ProdutoViewModel entidade)
         {
-            var produto = ObterPorId(entidade.Id);
+            var entity = buidProduto(entidade);
+
+            var produto = ObterPorId(entity.Id);
+
             if (produto is null)
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto {entidade.Id} não está cadastrado na Base");
+                throw RequisicaoInvalidaException.PorMotivo($"O Produto {entity.Id} não está cadastrado na Base");
 
             //_produtoRepository.Alterar(entidade);
             _serviceBus.SendMessage(entidade, "produtoupdatequeue");
 
-            return entidade;
+            return BuildModelResult(produto);
         }
 
         public void Deletar(int id)
         {
-            var produto = ObterPorId(id);
-            if (produto is null)
-            {
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto {id} não está cadastrado na Base");
-            }
-            _produtoRepository.Deletar(id);
+            throw new NotImplementedException();
         }
 
         public Produto ObterPorId(int id)
@@ -111,9 +112,15 @@ namespace Ecommerce.Application.Services
             return _produtoRepository.ObterPorId(id);
         }
 
-        public IList<Produto> ObterTodos()
+        public IList<ProdutoModelResult> ObterTodos()
         {
-            return _produtoRepository.ObterTodos();
+            var listResult = new List<ProdutoModelResult>();
+            var result = _produtoRepository.ObterTodos();
+
+            foreach (var item in result)
+                listResult.Add(BuildModelResult(item));
+
+            return listResult;
         }
 
         private ProdutoViewModel BuildViewModel(Produto produto)
@@ -122,6 +129,15 @@ namespace Ecommerce.Application.Services
                 return null;
 
             return new ProdutoViewModel(produto.Ativo, produto.Nome, produto.Preco,
+                produto.Descricao, produto.FabricanteId, produto.UrlImagem, produto.CategoriaId);
+        }
+
+        private ProdutoModelResult BuildModelResult(Produto produto)
+        {
+            if (produto is null)
+                return null;
+
+            return new ProdutoModelResult(produto.Ativo, produto.Nome, produto.Preco,
                 produto.Descricao, produto.FabricanteId, produto.UrlImagem, produto.CategoriaId);
         }
 
@@ -137,86 +153,15 @@ namespace Ecommerce.Application.Services
 
         public async Task<string> Upload(IFormFile arquivoimportado, int idProduto)
         {
-            string diretorio;
-            
-            if (!ObterTodos().Any(x => x.Id == idProduto))
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto Id={idProduto} não estã cadastrado, por isso não será possivel carregar a imagem");
+            throw new NotImplementedException();
 
-            if(arquivoimportado==null)
-                throw RequisicaoInvalidaException.PorMotivo($"Imagem não anexada para carregar a imagem do Produto Id={idProduto}");
-
-            try
-            {
-                string nomeArquivo = (idProduto.ToString() + ".jpg");
-
-                using var stream = new MemoryStream();
-                arquivoimportado.CopyTo(stream);
-                stream.Position = 0;
-
-
-                var connection = _configuration.GetSection("BlobStorage:ConectionString").Value;
-                var containnerName = _configuration.GetSection("BlobStorage:Container:ImagemProduto").Value;
-
-                BlobContainerClient container = new BlobContainerClient(connection, containnerName);
-
-                BlobClient blob = container.GetBlobClient(nomeArquivo);
-
-            
-                await blob.DeleteIfExistsAsync();                
-                await blob.UploadAsync(stream);
-                
-
-
-                diretorio = blob.Uri.AbsoluteUri.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw ErroInternoException.PorMotivo(ex, $"Erro ao carregar a imagem do Produto {idProduto} no diretório");
-            }
-
-
-            if (diretorio != null)
-            {
-                _produtoRepository.AdicionaUrlImagem(idProduto, diretorio);
-            }
-
-            return diretorio.ToString();
         }
 
         public async Task DeletarimagemProduto(int idProduto)
         {
-           
 
-            if (!ObterTodos().Any(x => x.Id == idProduto))
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto Id={idProduto} não estã cadastrado, por isso não será possivel carregar a imagem");
+            throw new NotImplementedException();
 
-
-            try
-            {
-                string nomeArquivo = (idProduto.ToString() + ".jpg");
-
-
-
-                var connection = _configuration.GetSection("BlobStorage:ConectionString").Value;
-                var containnerName = _configuration.GetSection("BlobStorage:Container:ImagemProduto").Value;
-
-                BlobContainerClient container = new BlobContainerClient(connection, containnerName);
-
-                BlobClient blob = container.GetBlobClient(nomeArquivo);
-
-                await blob.DeleteIfExistsAsync();
-
-                
-            }
-            catch (Exception ex)
-            {
-                throw ErroInternoException.PorMotivo(ex, $"Erro ao deletar a imagem do Produto {idProduto} no diretório");
-            }
-
-            
-            _produtoRepository.DeletarUrlImagem(idProduto);
-            
         }
-
     }
 }

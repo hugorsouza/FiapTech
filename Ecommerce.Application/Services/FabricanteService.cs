@@ -5,70 +5,87 @@ using Ecommerce.Domain.Services;
 using Ecommerce.Domain.Exceptions;
 using FluentValidation.Validators;
 using Ecommerce.Infra.ServiceBus.Interface;
+using Ecommerce.Domain.Interfaces.Repository;
+using Ecommerce.Domain.Interfaces.EFRepository;
+using Ecommerce.Application.Model.Pessoas.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 
 namespace Ecommerce.Application.Services
 {
     public class FabricanteService : IFabricanteService
     {
 
-        private readonly IFabricanteRepository _fabricanteRepository;
+        private readonly Domain.Interfaces.EFRepository.IFabricanteEfRepository _fabricanteRepository;
         private readonly IServiceBus _serviceBus;
+        private readonly IFabricanteEfRepository _fabricanteEfRepository;
+   
 
-        public FabricanteService(IFabricanteRepository fabricanteRepository, IServiceBus serviceBus)
+        public FabricanteService( IServiceBus serviceBus, IFabricanteEfRepository fabricanteEfRepository)
         {
-            _fabricanteRepository = fabricanteRepository;
+            
             _serviceBus = serviceBus;
+           
+            _fabricanteEfRepository = fabricanteEfRepository;
+
         }
 
-        public Fabricante Alterar(Fabricante entidade)
+        public FabricanteModelResult Alterar(FabricanteViewModel entidade)
         {
-            var categoria = ObterPorId(entidade.Id);
+            var fabricante = ObterPorId(entidade.Id);
 
-            if (categoria is null)
+            if (fabricante is null)
                 throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entidade.Id} não está cadastrado na Base");
 
             //_fabricanteRepository.Alterar(entidade);
 
             _serviceBus.SendMessage(entidade, "fabricanteupdatequeue");
 
-            return entidade;
+            return null;
         }
 
-        public FabricanteViewModel Cadastrar(FabricanteViewModel model)
+        public FabricanteModelResult Cadastrar(FabricanteViewModel model)
         {
             var fabricante = BuidFabricante(model);
+
+            var endereco = BuildEndereco(model.Endereco);
 
             fabricante.CNPJ = fabricante.ObterCnpjSemFormatacao();
 
             if (!validaCNPJ(fabricante.CNPJ))
                 throw RequisicaoInvalidaException.PorMotivo($"CNPJ {fabricante.CNPJ} inválido");
 
-            if (ObterTodos().Where(x=> x.CNPJ != null)
-                .Any(x=> x.CNPJ.Equals(fabricante.CNPJ)))
+            if (ObterTodos().Where(x => x.CNPJ != null)
+                .Any(x => x.CNPJ.Equals(fabricante.CNPJ)))
                 throw RequisicaoInvalidaException.PorMotivo($"O fabrinte {fabricante.CNPJ} Já está cadastrado na base!");
 
-            //_fabricanteRepository.Cadastrar(fabricante);
+            fabricante.Endereco = endereco;
+
             _serviceBus.SendMessage(fabricante, "fabricanteinsertqueue");
 
-            var fabricanteViewModel = BuildViewModel(fabricante);
-
-            return fabricanteViewModel;
+            return BuidModelResult(fabricante);
         }
 
-
-        public  void Deletar(int id)
+        public void Deletar(int id)
         {
             throw new NotImplementedException();
         }
 
-        public  Fabricante ObterPorId(int id)
+        public FabricanteModelResult ObterPorId(int id)
         {
-            return _fabricanteRepository.ObterPorId(id);
+            return BuidModelResult(_fabricanteEfRepository.ObterPorId(id));
         }
 
-        public  IList<Fabricante> ObterTodos()
+        public IList<FabricanteModelResult> ObterTodos()
         {
-            return _fabricanteRepository.ObterTodos();
+            var listResult = new List<FabricanteModelResult>();
+
+            var result = _fabricanteRepository.ObterTodos();
+
+            foreach (var item in result)
+                listResult.Add(BuidModelResult(item));
+
+            return listResult;
+            
         }
 
         private FabricanteViewModel BuildViewModel(Fabricante fabricante)
@@ -76,7 +93,7 @@ namespace Ecommerce.Application.Services
             if (fabricante is null)
                 return null;
 
-            return new FabricanteViewModel(fabricante.Nome, fabricante.Ativo, fabricante.CNPJ, fabricante.Endereco);
+            return new FabricanteViewModel(fabricante.Nome, fabricante.Ativo, fabricante.CNPJ, fabricante.Id);
         }
 
         private Fabricante BuidFabricante(FabricanteViewModel model)
@@ -84,7 +101,17 @@ namespace Ecommerce.Application.Services
             if (model is null)
                 return null;
 
-            return new Fabricante(model.Nome,model.CNPJ, model.Ativo, model.Endereco);
+            return new Fabricante(model.Nome, model.CNPJ, model.Ativo);
+
+        }
+
+
+        private FabricanteModelResult BuidModelResult(Fabricante model)
+        {
+            if (model is null)
+                return null;
+
+            return new FabricanteModelResult(model.Nome,  model.Ativo, model.CNPJ);
 
         }
 
@@ -121,6 +148,11 @@ namespace Ecommerce.Application.Services
                 resto = 11 - resto;
             digito = digito + resto.ToString();
             return cnpj.EndsWith(digito);
+        }
+
+        public Endereco BuildEndereco(EnderecoViewModel model) 
+        {
+            return new Endereco(model.Logradouro,model.Numero,model.CEP,model.Bairro,model.Cidade,model.Estado);        
         }
     }
 }

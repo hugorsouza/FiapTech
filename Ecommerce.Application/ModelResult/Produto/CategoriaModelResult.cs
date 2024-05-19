@@ -1,25 +1,28 @@
-﻿using Ecommerce.Domain.Entities.Produtos;
+﻿using MassTransit.Internals.GraphValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ecommerce.Application.Model.Produto
+namespace Ecommerce.Application.ModelResult.Produto
 {
-    public class CategoriaViewModel
+    public class CategoriaModelResult
     {
-        public CategoriaViewModel(string nome, string descricao, bool ativo, int id)
+        public CategoriaModelResult(string nome, string descricao, bool ativo)
         {
             Nome = nome;
             Descricao = descricao;
             Ativo = ativo;
-            Id = id;
         }
 
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public bool Ativo { get; set; }
-        public int Id { get; set; }
+        
+
+        
     }
 }
+
+
