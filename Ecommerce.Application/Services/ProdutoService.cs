@@ -67,7 +67,7 @@ namespace Ecommerce.Application.Services
         {
             var entity = buidProduto(entidade);
 
-            var result = ObterPorId(entity.Id);
+            var result = ObterPorId(entidade.Id);
 
             if (result is null)
                 throw RequisicaoInvalidaException.PorMotivo($"O Produto {entity.Id} não está cadastrado na Base");
@@ -108,7 +108,7 @@ namespace Ecommerce.Application.Services
                 return null;
 
             return new ProdutoViewModel(produto.Ativo, produto.Nome, produto.Preco,
-                produto.Descricao, produto.FabricanteId, produto.UrlImagem, produto.CategoriaId);
+                produto.Descricao, produto.FabricanteId, produto.UrlImagem, produto.CategoriaId, produto.Id);
         }
 
         private ProdutoModelResult BuildModelResult(Produto produto)
