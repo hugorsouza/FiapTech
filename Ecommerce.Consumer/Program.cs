@@ -1,3 +1,4 @@
+using Ecommerce.Application.Services;
 using Ecommerce.Consumer.Background.Queues.CategoriaQueue;
 using Ecommerce.Consumer.Background.Queues.ClienteQueue;
 using Ecommerce.Consumer.Background.Queues.FabricanteQueue;
@@ -8,6 +9,7 @@ using Ecommerce.Domain.Interfaces;
 using Ecommerce.Domain.Interfaces.EFRepository;
 using Ecommerce.Domain.Interfaces.Repository;
 using Ecommerce.Domain.Repository;
+using Ecommerce.Domain.Services;
 using Ecommerce.Infra.Dapper.Factory;
 using Ecommerce.Infra.Dapper.Interfaces;
 using Ecommerce.Infra.Dapper.Repositories;
@@ -26,14 +28,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>()
                 .AddScoped<UnitOfWork>()
                 .AddScoped<ITransactionService>(sp => sp.GetService<UnitOfWork>())
+                
                 .AddScoped<IUnitOfWork>(sp => sp.GetService<UnitOfWork>())
                 .AddScoped<ICategoriaRepository, CategoriaRepository>()
                 .AddScoped<ICategoriaEfRepository, CategoriaEfRepository>()
+                .AddScoped<IFabricanteEfRepository, FabricanteEfRepository>()
                 .AddScoped<IFabricanteRepository, FabricanteRepository>()
                 .AddScoped<IProdutoRepository, ProdutoRepository>()
                 .AddScoped<IPedidoRepository, PedidoRepository>()
-                .AddScoped<IClienteRepository, ClienteRepository>()
-                ;
+                .AddScoped<IClienteRepository, ClienteRepository>();
 
 builder.Services.AddControllers();
 

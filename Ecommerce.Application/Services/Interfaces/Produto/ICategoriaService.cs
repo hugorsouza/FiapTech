@@ -11,5 +11,6 @@ namespace Ecommerce.Domain.Services
         CategoriaModelResult ObterPorId(int id);
         IList<CategoriaModelResult> ObterTodos();
         CategoriaModelResult Alterar(CategoriaViewModel entidade);
+        void AlterarQueue(Categoria entidade);
     }
 }

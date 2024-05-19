@@ -79,7 +79,7 @@ namespace Ecommerce.Application.Services
         {
             var listResult = new List<FabricanteModelResult>();
 
-            var result = _fabricanteRepository.ObterTodos();
+            var result = _fabricanteEfRepository.ObterTodos();
 
             foreach (var item in result)
                 listResult.Add(BuidModelResult(item));

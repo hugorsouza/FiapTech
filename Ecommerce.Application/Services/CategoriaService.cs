@@ -39,7 +39,7 @@ namespace Ecommerce.Application.Services
             
             _categoriaEfRepository.Alterar(obj);
 
-           // _serviceBus.SendMessage(model, "categoriaupdatequeue");
+           _serviceBus.SendMessage(model, "categoriaupdatequeue");
 
             return BuildModelResult(obj);
         }
@@ -54,8 +54,6 @@ namespace Ecommerce.Application.Services
 
 
            _serviceBus.SendMessage(categoria, "categoriainsertqueue");
-
-          // _categoriaEfRepository.Cadastrar(categoria);
 
             return BuildModelResult(categoria);
         }
@@ -107,6 +105,19 @@ namespace Ecommerce.Application.Services
 
             return new Categoria(model.Descricao, model.Nome, model.Ativo, model.Id);
 
+        }
+
+        public void AlterarQueue(Categoria entidade)
+        {
+            var obj = _categoriaEfRepository.ObterPorId(entidade.Id);
+
+            obj.Descricao = entidade.Descricao;
+            obj.Nome = entidade.Nome;
+            obj.Ativo = entidade.Ativo;
+
+            _categoriaEfRepository.Alterar(obj);
+
+           
         }
     }
 }
