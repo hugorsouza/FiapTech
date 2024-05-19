@@ -13,7 +13,7 @@ namespace Ecommerce.Domain.Services
     public interface IProdutoService 
     {
         ProdutoModelResult Cadastrar(ProdutoViewModel entidade);
-        Produto ObterPorId(int id);
+        ProdutoModelResult ObterPorId(int id);
         IList<ProdutoModelResult> ObterTodos();
         ProdutoModelResult Alterar(ProdutoViewModel entidade);
         void Deletar(int id);
