@@ -17,7 +17,7 @@ namespace Ecommerce.Infra.Entity.Repositories
 
         }
 
-
+        //teste
         public override Fabricante ObterPorId(int id)
         {
            return _dbSet.FirstOrDefault(p => p.Id == id);
