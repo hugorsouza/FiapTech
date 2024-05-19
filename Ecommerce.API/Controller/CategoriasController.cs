@@ -37,6 +37,7 @@ namespace Ecommerce.API.Controller
             return Ok(result);
         }
 
+
         /// <summary>
         /// Obter categoria por ID
         /// </summary>
