@@ -12,7 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ecommerce.API.Controller
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class ProdutoController : ControllerBase
