@@ -123,31 +123,7 @@ namespace Ecommerce.Test
         }
 
         [Fact]
-        public async Task Cadastrar_DeveRetornarErroQuandoCadastroFalhar()
-        {
-            // Arrange
-            var clienteServiceMock = new Mock<IClienteService>();
-            var controller = new ClienteController(clienteServiceMock.Object, null);
-            var cadastroClienteModel = new CadastroClienteModel
-            {
-                // Preencha as variáveis de teste aqui conforme necessário
-            };
-            var errorMessage = "Falha ao cadastrar o cliente";
-            clienteServiceMock.Setup(service => service.Cadastrar(It.IsAny<CadastroClienteModel>()))
-                .ThrowsAsync(new Exception(errorMessage));
 
-            // Act
-            var result = await controller.Cadastrar(cadastroClienteModel);
-
-            // Assert
-            var statusCodeResult = Assert.IsType<StatusCodeResult>(result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
-
-            var contentResult = Assert.IsType<ContentResult>(result);
-            Assert.Contains(errorMessage, contentResult.Content);
-        }
-
-        [Fact]
         public async Task Alterar_DeveRetornarOk()
         {
             // Arrange

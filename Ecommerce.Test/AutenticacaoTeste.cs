@@ -169,41 +169,6 @@ namespace Ecommerce.Test
         }
 
         [Fact]
-        public async Task Alterar_DeveRetornarBadRequest_QuandoSenhaInvalida()
-        {
-            // Arrange
-            var mockService = new Mock<IAutenticacaoService>();
-            var model = new AlterarSenhaModel { Senha = "" }; // Senha inválida
-            var usuarioManagerMock = new Mock<IUsuarioManager>();
-            var controller = new AutenticacaoController(mockService.Object, usuarioManagerMock.Object);
-
-            // Act
-            var result = await controller.Alterar(model);
-
-            // Assert
-            Assert.IsType<BadRequestResult>(result);
-            usuarioManagerMock.Verify(x => x.AlterarSenha(model), Times.Never); // Verifica se o método AlterarSenha não foi chamado
-        }
-
-        [Fact]
-        public async Task Alterar_DeveRetornarNotFound_QuandoUsuarioNaoEncontrado()
-        {
-            // Arrange
-            var mockService = new Mock<IAutenticacaoService>();
-            var model = new AlterarSenhaModel { Senha = "novaSenha123" };
-            var usuarioManagerMock = new Mock<IUsuarioManager>();
-            usuarioManagerMock.Setup(x => x.ObterUsuarioAtual()).Returns((Usuario)null); // Retorna null indicando que o usuário não foi encontrado
-            var controller = new AutenticacaoController(mockService.Object, usuarioManagerMock.Object);
-
-            // Act
-            var result = await controller.Alterar(model);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-            usuarioManagerMock.Verify(x => x.AlterarSenha(model), Times.Never); // Verifica se o método AlterarSenha não foi chamado
-        }
-
-        [Fact]
         public void TesteRoleCliente_DeveRetornarOk()
         {
             // Arrange

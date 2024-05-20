@@ -63,7 +63,6 @@ public class ClienteController : ControllerBase
         {
             throw new Exception("Falha ao cadastrar o cliente", ex);
         }
-        
     } 
     
     /// <summary>
