@@ -14,6 +14,7 @@ Essa fase do projeto contém, implementações:
 
 # Documentação 📜
 Ecommerce Tech Challenge - Levantamento de requisitos e critério de aceite.pdf
+Ecommerce Tech Challenge - Documentação técnica.pdf
 
 ## 💻 Pré-requisitos
 
