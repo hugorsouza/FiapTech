@@ -13,8 +13,7 @@ Essa fase do projeto contém, implementações:
 * Clean Architecture 
 
 # Documentação 📜
-
-Documentação: 
+Ecommerce Tech Challenge - Levantamento de requisitos e critério de aceite.pdf
 
 ## 💻 Pré-requisitos
 
