@@ -11,7 +11,7 @@ namespace Ecommerce.Application.Model.Produto
     public class ProdutoViewModel
     {
 
-        public ProdutoViewModel(bool ativo, string nome, decimal preco, string descricao,int fabricanteId, string urlImagem, int categoriaId)
+        public ProdutoViewModel(bool ativo, string nome, decimal preco, string descricao,int fabricanteId, string urlImagem, int categoriaId, int id)
         {
             Ativo = ativo;
             Nome = nome;
@@ -20,9 +20,10 @@ namespace Ecommerce.Application.Model.Produto
             FabricanteId = fabricanteId;
             UrlImagem = urlImagem;
             CategoriaId = categoriaId;
+            Id = id;
 
-
-        } 
+        }
+        public int Id { get; set; }
         public bool Ativo { get; set; }
         public string Nome { get; set; }
         public decimal Preco { get; set; }

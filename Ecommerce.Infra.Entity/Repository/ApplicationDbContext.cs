@@ -1,5 +1,7 @@
 ﻿using Ecommerce.Domain.Entities.Produtos;
+using Ecommerce.Infra.Entity.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,16 @@ namespace Ecommerce.Infra.Entity.Repository
     {
         private readonly string _connectionString;
 
+        public ApplicationDbContext()
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            _connectionString = "Server=tcp:db-fiap-tech.database.windows.net,1433;Initial Catalog=Ecommerce;Persist Security Info=False;User ID=Ecommerce;Password=Fi@p2023;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        }
+
         public ApplicationDbContext(string connectionString)
         {
             _connectionString = connectionString;
@@ -23,25 +35,7 @@ namespace Ecommerce.Infra.Entity.Repository
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<Endereco>(e =>
-            {
-                e.ToTable("tbl_Endereco");
-                e.HasKey(p => p.Id);
-                e.Property(p => p.Id).HasColumnType("INT").ValueGeneratedNever().UseIdentityColumn();
-                e.Property(p => p.Logradouro).HasColumnType("Varchar(100)").IsRequired();
-                e.Property(p => p.Numero).HasColumnType("Varchar(100)").IsRequired();
-                e.Property(p => p.CEP).HasColumnType("Varchar(100)").IsRequired();
-                e.Property(p => p.Bairro).HasColumnType("Varchar(100)").IsRequired();
-                e.Property(p => p.Cidade).HasColumnType("Varchar(100)").IsRequired();
-                e.Property(p => p.Estado).HasColumnType("Varchar(100)").IsRequired();
-            });
-
-            //public required string Logradouro { get; set; }
-            //public required string Numero { get; set; }
-            //public required string CEP { get; set; }
-            //public required string Bairro { get; set; }
-            //public required string Cidade { get; set; }
-            //public required string Estado { get; set; }
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         }
 

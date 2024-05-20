@@ -3,6 +3,7 @@ using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Application.Services;
 using Ecommerce.Domain.Entities.Pessoas.Autenticacao;
 using Ecommerce.Domain.Entities.Produtos;
+using Ecommerce.Domain.Interfaces.EFRepository;
 using Ecommerce.Domain.Services;
 using Ecommerce.Infra.Auth.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -18,10 +19,12 @@ namespace Ecommerce.API.Controller
     {
         private readonly IFabricanteService _fabricanteservice;
         private readonly ILogger<CategoriaController> _logger;
+      
         public FabricanteController(IFabricanteService fabricanteservice, ILogger<CategoriaController> logger)
         {
             _fabricanteservice = fabricanteservice;
             _logger = logger;
+            
         }
 
         /// <summary>
@@ -37,6 +40,7 @@ namespace Ecommerce.API.Controller
         public IActionResult Cadastrar([FromBody] FabricanteViewModel fabricante)
         {
             var result = _fabricanteservice.Cadastrar(fabricante);
+
             return Ok(result);
         }
 

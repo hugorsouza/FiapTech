@@ -37,6 +37,11 @@ namespace Ecommerce.Domain.Entities.Produtos
         public string UrlImagem { get; set; }
         public int CategoriaId { get; set; }
 
+        public Categoria Categoria { get; set; }
+
+        public Fabricante Fabricante { get; set; }
+       
+
 
 
     }

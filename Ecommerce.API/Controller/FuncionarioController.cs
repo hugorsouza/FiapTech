@@ -34,6 +34,9 @@ public class FuncionarioController : ControllerBase
     public async Task<IActionResult> ObterTodos()
     {
         var resultado = await _funcionarioService.ObterTodos();
+        if (resultado == null || !resultado.Any())
+            return NoContent();
+
         return Ok(resultado);
     }
     
@@ -49,8 +52,15 @@ public class FuncionarioController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Cadastrar([FromBody] CadastroFuncionarioModel cadastro)
     {
-        var resultado = await _funcionarioService.Cadastrar(cadastro);
-        return Ok(resultado);
+        try
+        {
+            var resultado = await _funcionarioService.Cadastrar(cadastro);
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Falha ao cadastrar o funcionário");
+        }
     } 
     
     /// <summary>
@@ -66,8 +76,15 @@ public class FuncionarioController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Alterar([FromRoute] int id, [FromBody] AlterarFuncionarioModel cadastro)
     {
-        var resultado = await _funcionarioService.Alterar(cadastro, id);
-        return Ok(resultado);
+        try
+        {
+            var resultado = await _funcionarioService.Alterar(cadastro, id);
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Falha ao alterar o funcionário: " + ex.Message });
+        }
     }
 
     /// <summary>
@@ -98,7 +115,11 @@ public class FuncionarioController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ObterPorId([FromRoute] int id)
     {
-        var resultado = await _funcionarioService.ObterPorId(id);
-        return Ok(resultado);
+        var funcionario = await _funcionarioService.ObterPorId(id);
+        if (funcionario == null)
+        {
+            return NoContent(); // Retorna NoContentResult quando o funcionário não é encontrado
+        }
+        return Ok(funcionario);
     }
 }

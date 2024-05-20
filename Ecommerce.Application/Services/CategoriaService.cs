@@ -2,6 +2,7 @@
 using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Exceptions;
+using Ecommerce.Domain.Interfaces.EFRepository;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Domain.Services;
 using Ecommerce.Infra.ServiceBus.Interface;
@@ -13,19 +14,19 @@ namespace Ecommerce.Application.Services
 
         private readonly ICategoriaRepository _categoriaRepository;
         private readonly IServiceBus _serviceBus;
+        private readonly ICategoriaEfRepository _categoriaEfRepository;
 
-        public CategoriaService(ICategoriaRepository categoriaRepository, IServiceBus serviceBus)
+        public CategoriaService(ICategoriaRepository categoriaRepository, IServiceBus serviceBus, ICategoriaEfRepository categoriaEfRepository)
         {
             _categoriaRepository = categoriaRepository;
             _serviceBus = serviceBus;
+            _categoriaEfRepository = categoriaEfRepository;
         }
 
         public CategoriaModelResult Alterar(CategoriaViewModel model)
         {
            
             var categoria = ObterPorId(model.Id);
-
-            var categoria = ObterPorId(entity.Id);
 
             if (categoria is null)
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {model.Id} não está cadastrada na Base!");    
@@ -38,7 +39,7 @@ namespace Ecommerce.Application.Services
             
             _categoriaEfRepository.Alterar(obj);
 
-           // _serviceBus.SendMessage(model, "categoriaupdatequeue");
+           _serviceBus.SendMessage(model, "categoriaupdatequeue");
 
             return BuildModelResult(obj);
         }
@@ -52,9 +53,7 @@ namespace Ecommerce.Application.Services
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {categoria.Nome} Já está cadastrada!");
 
 
-            _serviceBus.SendMessage(categoria, "categoriainsertqueue");
-
-            //_categoriaEfRepository.Cadastrar(categoria);
+           _serviceBus.SendMessage(categoria, "categoriainsertqueue");
 
             return BuildModelResult(categoria);
         }
@@ -88,7 +87,7 @@ namespace Ecommerce.Application.Services
             if (categoria is null)
                 return null;
 
-            return new CategoriaViewModel(categoria.Nome, categoria.Descricao, categoria.Ativo);
+            return new CategoriaViewModel(categoria.Nome, categoria.Descricao, categoria.Ativo, categoria.Id);
         }
 
         private CategoriaModelResult BuildModelResult(Categoria categoria)
@@ -104,8 +103,21 @@ namespace Ecommerce.Application.Services
             if (model is null)
                 return null;
 
-            return new Categoria(model.Descricao, model.Nome, model.Ativo);
+            return new Categoria(model.Descricao, model.Nome, model.Ativo, model.Id);
 
+        }
+
+        public void AlterarQueue(Categoria entidade)
+        {
+            var obj = _categoriaEfRepository.ObterPorId(entidade.Id);
+
+            obj.Descricao = entidade.Descricao;
+            obj.Nome = entidade.Nome;
+            obj.Ativo = entidade.Ativo;
+
+            _categoriaEfRepository.Alterar(obj);
+
+           
         }
     }
 }

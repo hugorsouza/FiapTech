@@ -33,7 +33,14 @@ public class ClienteController : ControllerBase
     public async Task<IActionResult> ObterTodos()
     {
         var resultado = await _clienteService.ObterTodos();
-        return Ok(resultado);
+        if (resultado.Any())
+        {
+            return Ok(resultado);
+        }
+        else
+        {
+            return NoContent();
+        }
     }
     
     /// <summary>
@@ -47,8 +54,15 @@ public class ClienteController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Cadastrar([FromBody] CadastroClienteModel cadastro)
     {
-        var resultado = await _clienteService.Cadastrar(cadastro);
-        return Ok(resultado);
+        try
+        {
+            var resultado = await _clienteService.Cadastrar(cadastro);
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Falha ao cadastrar o cliente", ex);
+        }
     } 
     
     /// <summary>
@@ -111,6 +125,13 @@ public class ClienteController : ControllerBase
     public async Task<IActionResult> ObterPorId([FromRoute] int id)
     {
         var resultado = await _clienteService.ObterPorId(id);
-        return Ok(resultado);
+        if (resultado == null)
+        {
+            return NotFound();
+        }
+        else
+        {
+            return Ok(resultado);
+        }
     }
 }

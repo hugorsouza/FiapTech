@@ -13,7 +13,17 @@ namespace Ecommerce.Consumer.Background.Queues.FabricanteQueue
         }
         public Task Consume(ConsumeContext<Fabricante> context)
         {
-            _repository.Alterar(context.Message);
+            var entidade = context.Message;
+
+            var obj = _repository.ObterPorId(entidade.Id);
+
+            
+            obj.Nome = entidade.Nome;
+            obj.Ativo = entidade.Ativo;
+
+
+
+            _repository.Alterar(obj);
 
             return Task.CompletedTask;
         }

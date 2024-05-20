@@ -52,7 +52,7 @@ namespace Ecommerce.API.Controller
         public async Task<IActionResult> ObterListaCompletaEstoque()
         {
             var result = await _estoqueService.ObterListaCompletaEstoque();
-            if (result != null)
+            if (result != null && result.Any())
                 return Ok(result);
 
             return NoContent();

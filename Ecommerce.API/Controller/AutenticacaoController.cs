@@ -33,6 +33,10 @@ namespace Ecommerce.API.Controller
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             var resultado = await _autenticacaoService.Login(login);
+            if (resultado == null)
+            {
+                return BadRequest("Invalid login attempt");
+            }
             return Ok(resultado);
         }
 
@@ -48,6 +52,10 @@ namespace Ecommerce.API.Controller
         public async Task<IActionResult> Refresh([FromBody] RefreshLoginModel login)
         {
             var resultado = await _autenticacaoService.RefreshLogin(login);
+            if (resultado == null)
+            {
+                return BadRequest("Invalid refresh token");
+            }
             return Ok(resultado);
         }
 
@@ -62,6 +70,10 @@ namespace Ecommerce.API.Controller
         public async Task<IActionResult> Alterar([FromBody] AlterarSenhaModel model)
         {
             _usuarioManager.AlterarSenha(model);
+            if (_usuarioManager == null)
+            {
+                return BadRequest("BadRequestResult");
+            }
             return Ok();
         } 
 

@@ -1,4 +1,5 @@
-﻿using Ecommerce.Domain.Entities.Produtos;
+﻿using Ecommerce.Application.Model.Pessoas.Produto;
+using Ecommerce.Domain.Entities.Produtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Ecommerce.Application.Model.Produto
             Ativo = ativo;
             CNPJ = cnpj;
             Id = id;
-            
+
         }
         public FabricanteViewModel()
         {
@@ -26,6 +27,6 @@ namespace Ecommerce.Application.Model.Produto
         public string Nome { get; set; }
         public bool Ativo { get; set; }
         public string CNPJ { get; set; }
-        public Endereco Endereco { get; set; }
+        public EnderecoViewModel Endereco { get; set; }
     }
 }

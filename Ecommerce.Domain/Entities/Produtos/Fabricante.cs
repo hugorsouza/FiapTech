@@ -10,17 +10,21 @@ namespace Ecommerce.Domain.Entities.Produtos
     public class Fabricante : Entidade
     {
         public Fabricante() : base() { }
-        public Fabricante(string nome, string cnpj ,bool ativo, Endereco endereco)
+        public Fabricante(string nome, string cnpj ,bool ativo)
         {
             CNPJ = cnpj;
             Nome = nome;
             Ativo = ativo;
-            Endereco = endereco;
+           
         }
+
 
 
         public string CNPJ { get; set; }
         public Endereco Endereco { get; set; }
+        public int EnderecoId { get; set; }
+
+        public ICollection<Produto> Produtos { get; set; }
 
         public string ObterCnpjSemFormatacao() => string.Join("", CNPJ.Where(char.IsDigit).ToArray());
 

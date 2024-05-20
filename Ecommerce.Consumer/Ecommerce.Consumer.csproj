@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ecommerce.Domain\Ecommerce.Domain.csproj" />
     <ProjectReference Include="..\Ecommerce.Infra.Dapper\Ecommerce.Infra.Dapper.csproj" />
+    <ProjectReference Include="..\Ecommerce.Infra.Entity\Ecommerce.Infra.Entity.csproj" />
     <ProjectReference Include="..\Ecommerce.Infra.Logging\Ecommerce.Infra.Logging.csproj" />
     <ProjectReference Include="..\Ecommerce.Infra.ServiceBus\Ecommerce.Infra.ServiceBus.csproj" />
   </ItemGroup>

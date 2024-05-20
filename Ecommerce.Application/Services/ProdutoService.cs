@@ -1,9 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using Ecommerce.Application.Model.Produto;
+using Ecommerce.Application.ModelResult.Produto;
 using Ecommerce.Application.Services.Interfaces.Autenticacao;
 using Ecommerce.Domain.Entities.Estoque;
 using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Exceptions;
+using Ecommerce.Domain.Interfaces.EFRepository;
 using Ecommerce.Domain.Interfaces.Repository;
 using Ecommerce.Domain.Repository;
 using Ecommerce.Domain.Services;
@@ -17,6 +19,7 @@ namespace Ecommerce.Application.Services
     {
 
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IProdutoEfRepository _produtoEfRepository;
         private readonly IEstoqueRepository _estoqueRepository;
         private readonly IUsuarioManager _usuarioManager;
         private readonly IFuncionarioRepository _funcionarioRepository;
@@ -24,22 +27,24 @@ namespace Ecommerce.Application.Services
         private readonly IServiceBus _serviceBus;
 
         public ProdutoService(
-            IProdutoRepository produtoRepository, 
-            IEstoqueRepository estoqueRepository, 
+            IProdutoRepository produtoRepository,
+            IProdutoEfRepository produtoEfRepository,
+            IEstoqueRepository estoqueRepository,
             IUsuarioManager usuarioManager,
             IFuncionarioRepository funcionarioRepository,
             IConfiguration configuration,
             IServiceBus serviceBus)
         {
-            _produtoRepository = produtoRepository; 
+            _produtoRepository = produtoRepository;
             _estoqueRepository = estoqueRepository;
             _usuarioManager = usuarioManager;
             _funcionarioRepository = funcionarioRepository;
             _configuration = configuration;
             _serviceBus = serviceBus;
+            _produtoEfRepository = produtoEfRepository;
         }
 
-        public async Task<ProdutoViewModel> Cadastrar(ProdutoViewModel entidade)
+        public ProdutoModelResult Cadastrar(ProdutoViewModel entidade)
         {
             var produto = buidProduto(entidade);
 
@@ -50,70 +55,51 @@ namespace Ecommerce.Application.Services
 
             var produtoViewModel = BuildViewModel(produto);
 
-            //Add item no estoque
-            //var consultaUser = _usuarioManager.ObterUsuarioAtual();
-           // if (consultaUser == null)
-            //    throw RequisicaoInvalidaException.PorMotivo($"Funcionario {consultaUser.Id} não localizado");
 
-           // var consultaFuncionario = _funcionarioRepository.ObterPorId(consultaUser.Id);
-
-            //var estoque = new Estoque
-            //{
-            //    UsuarioDocumento = consultaFuncionario.Cpf,
-            //    Usuario = consultaUser.NomeExibicao,
-            //    QuantidadeAtual = 0,
-            //    DataUltimaMovimentacao = DateTime.UtcNow
-            //};
+            _serviceBus.SendMessage(produto, "produtoinsertqueue");       
 
 
-            var estoque = new Estoque
-            {
-                UsuarioDocumento = "1342342354",
-                Usuario = "Pedro Alvares Cabral",
-                QuantidadeAtual = 0,
-                DataUltimaMovimentacao = DateTime.UtcNow
-            };
-
-            var produtoEstoque = new { Produto = produto, Estoque = estoque };
-
-
-            //var produtoId = await _produtoRepository.CadastrarAsync(produto, estoque);
-            _serviceBus.SendMessage(produto, "produtoinsertqueue");
-
-            return produtoViewModel;
+            return BuildModelResult(produto);
 
         }
 
-        public Produto Alterar(Produto entidade)
+        public ProdutoModelResult Alterar(ProdutoViewModel entidade)
         {
-            var produto = ObterPorId(entidade.Id);
-            if (produto is null)
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto {entidade.Id} não está cadastrado na Base");
+            var entity = buidProduto(entidade);
 
-            //_produtoRepository.Alterar(entidade);
-            _serviceBus.SendMessage(entidade, "produtoupdatequeue");
+            var result = ObterPorId(entidade.Id);
 
-            return entidade;
+            if (result is null)
+                throw RequisicaoInvalidaException.PorMotivo($"O Produto {entity.Id} não está cadastrado na Base");
+
+            var produto = buidProduto(entidade);
+            
+            _serviceBus.SendMessage(produto, "produtoupdatequeue");
+
+            return BuildModelResult(produto);
         }
 
         public void Deletar(int id)
         {
-            var produto = ObterPorId(id);
-            if (produto is null)
-            {
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto {id} não está cadastrado na Base");
-            }
-            _produtoRepository.Deletar(id);
+            throw new NotImplementedException();
         }
 
-        public Produto ObterPorId(int id)
+        public ProdutoModelResult ObterPorId(int id)
         {
-            return _produtoRepository.ObterPorId(id);
+            var result = _produtoEfRepository.ObterPorId(id);
+
+            return BuildModelResult(result);
         }
 
-        public IList<Produto> ObterTodos()
+        public IList<ProdutoModelResult> ObterTodos()
         {
-            return _produtoRepository.ObterTodos();
+            var listResult = new List<ProdutoModelResult>();
+            var result = _produtoEfRepository.ObterTodos();
+
+            foreach (var item in result)
+                listResult.Add(BuildModelResult(item));
+
+            return listResult;
         }
 
         private ProdutoViewModel BuildViewModel(Produto produto)
@@ -122,6 +108,15 @@ namespace Ecommerce.Application.Services
                 return null;
 
             return new ProdutoViewModel(produto.Ativo, produto.Nome, produto.Preco,
+                produto.Descricao, produto.FabricanteId, produto.UrlImagem, produto.CategoriaId, produto.Id);
+        }
+
+        private ProdutoModelResult BuildModelResult(Produto produto)
+        {
+            if (produto is null)
+                return null;
+
+            return new ProdutoModelResult(produto.Ativo, produto.Nome, produto.Preco,
                 produto.Descricao, produto.FabricanteId, produto.UrlImagem, produto.CategoriaId);
         }
 
@@ -137,86 +132,15 @@ namespace Ecommerce.Application.Services
 
         public async Task<string> Upload(IFormFile arquivoimportado, int idProduto)
         {
-            string diretorio;
-            
-            if (!ObterTodos().Any(x => x.Id == idProduto))
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto Id={idProduto} não estã cadastrado, por isso não será possivel carregar a imagem");
+            throw new NotImplementedException();
 
-            if(arquivoimportado==null)
-                throw RequisicaoInvalidaException.PorMotivo($"Imagem não anexada para carregar a imagem do Produto Id={idProduto}");
-
-            try
-            {
-                string nomeArquivo = (idProduto.ToString() + ".jpg");
-
-                using var stream = new MemoryStream();
-                arquivoimportado.CopyTo(stream);
-                stream.Position = 0;
-
-
-                var connection = _configuration.GetSection("BlobStorage:ConectionString").Value;
-                var containnerName = _configuration.GetSection("BlobStorage:Container:ImagemProduto").Value;
-
-                BlobContainerClient container = new BlobContainerClient(connection, containnerName);
-
-                BlobClient blob = container.GetBlobClient(nomeArquivo);
-
-            
-                await blob.DeleteIfExistsAsync();                
-                await blob.UploadAsync(stream);
-                
-
-
-                diretorio = blob.Uri.AbsoluteUri.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw ErroInternoException.PorMotivo(ex, $"Erro ao carregar a imagem do Produto {idProduto} no diretório");
-            }
-
-
-            if (diretorio != null)
-            {
-                _produtoRepository.AdicionaUrlImagem(idProduto, diretorio);
-            }
-
-            return diretorio.ToString();
         }
 
         public async Task DeletarimagemProduto(int idProduto)
         {
-           
 
-            if (!ObterTodos().Any(x => x.Id == idProduto))
-                throw RequisicaoInvalidaException.PorMotivo($"O Produto Id={idProduto} não estã cadastrado, por isso não será possivel carregar a imagem");
+            throw new NotImplementedException();
 
-
-            try
-            {
-                string nomeArquivo = (idProduto.ToString() + ".jpg");
-
-
-
-                var connection = _configuration.GetSection("BlobStorage:ConectionString").Value;
-                var containnerName = _configuration.GetSection("BlobStorage:Container:ImagemProduto").Value;
-
-                BlobContainerClient container = new BlobContainerClient(connection, containnerName);
-
-                BlobClient blob = container.GetBlobClient(nomeArquivo);
-
-                await blob.DeleteIfExistsAsync();
-
-                
-            }
-            catch (Exception ex)
-            {
-                throw ErroInternoException.PorMotivo(ex, $"Erro ao deletar a imagem do Produto {idProduto} no diretório");
-            }
-
-            
-            _produtoRepository.DeletarUrlImagem(idProduto);
-            
         }
-
     }
 }

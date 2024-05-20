@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Application.Model.Produto;
 using Ecommerce.Application.ModelResult.Produto;
+using Ecommerce.Application.Services;
 using Ecommerce.Domain.Entities.Pessoas.Autenticacao;
 using Ecommerce.Domain.Entities.Produtos;
 using Ecommerce.Domain.Services;
@@ -34,9 +35,22 @@ namespace Ecommerce.API.Controller
         [Route("Cadastrar")]
         public IActionResult Cadastrar([FromBody] CategoriaViewModel categoria)
         {
-            var result = _categoriaservice.Cadastrar(categoria);
-            return Ok(result);
+            if (categoria == null || string.IsNullOrEmpty(categoria.Nome) || string.IsNullOrEmpty(categoria.Descricao))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var result = _categoriaservice.Cadastrar(categoria);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
+
 
         /// <summary>
         /// Obter categoria por ID
@@ -91,6 +105,11 @@ namespace Ecommerce.API.Controller
         [Route("Alterar")]
         public IActionResult Alterar([FromBody] CategoriaViewModel categoria)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = _categoriaservice.Alterar(categoria);
 
             return Ok(result);

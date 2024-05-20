@@ -15,13 +15,18 @@ namespace Ecommerce.Application.Services
     public class FabricanteService : IFabricanteService
     {
 
-        private readonly IFabricanteRepository _fabricanteRepository;
+        private readonly Domain.Interfaces.EFRepository.IFabricanteEfRepository _fabricanteRepository;
         private readonly IServiceBus _serviceBus;
+        private readonly IFabricanteEfRepository _fabricanteEfRepository;
+   
 
-        public FabricanteService(IFabricanteRepository fabricanteRepository, IServiceBus serviceBus)
+        public FabricanteService( IServiceBus serviceBus, IFabricanteEfRepository fabricanteEfRepository)
         {
-            _fabricanteRepository = fabricanteRepository;
+            
             _serviceBus = serviceBus;
+           
+            _fabricanteEfRepository = fabricanteEfRepository;
+
         }
 
         public FabricanteModelResult Alterar(FabricanteViewModel entidade)
@@ -29,9 +34,9 @@ namespace Ecommerce.Application.Services
             var fabricante = ObterPorId(entidade.Id);
 
             if (fabricante is null)
-                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entity.Id} não está cadastrado na Base");
+                throw RequisicaoInvalidaException.PorMotivo($"O Fabricante {entidade.Id} não está cadastrado na Base");
 
-            //_fabricanteRepository.Alterar(entidade);
+            var entity = BuidFabricante(entidade);
 
             _serviceBus.SendMessage(entity, "fabricanteupdatequeue");
 
@@ -41,7 +46,6 @@ namespace Ecommerce.Application.Services
         public FabricanteModelResult Cadastrar(FabricanteViewModel model)
         {
             var fabricante = BuidFabricante(model);
-
 
             var endereco = BuildEndereco(model.Endereco);
 
@@ -61,8 +65,7 @@ namespace Ecommerce.Application.Services
             return BuidModelResult(fabricante);
         }
 
-
-        public  void Deletar(int id)
+        public void Deletar(int id)
         {
             throw new NotImplementedException();
         }
@@ -76,7 +79,7 @@ namespace Ecommerce.Application.Services
         {
             var listResult = new List<FabricanteModelResult>();
 
-            var result = _fabricanteRepository.ObterTodos();
+            var result = _fabricanteEfRepository.ObterTodos();
 
             foreach (var item in result)
                 listResult.Add(BuidModelResult(item));
@@ -98,17 +101,7 @@ namespace Ecommerce.Application.Services
             if (model is null)
                 return null;
 
-            return new Fabricante(model.Nome,model.CNPJ, model.Ativo, model.Endereco);
-
-        }
-
-
-        private FabricanteModelResult BuidModelResult(Fabricante model)
-        {
-            if (model is null)
-                return null;
-
-            return new FabricanteModelResult(model.Nome,  model.Ativo, model.CNPJ);
+            return new Fabricante(model.Nome, model.CNPJ, model.Ativo);
 
         }
 
@@ -155,6 +148,11 @@ namespace Ecommerce.Application.Services
                 resto = 11 - resto;
             digito = digito + resto.ToString();
             return cnpj.EndsWith(digito);
+        }
+
+        public Endereco BuildEndereco(EnderecoViewModel model) 
+        {
+            return new Endereco(model.Logradouro,model.Numero,model.CEP,model.Bairro,model.Cidade,model.Estado);        
         }
     }
 }
