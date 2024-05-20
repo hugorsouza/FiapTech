@@ -40,6 +40,7 @@ namespace Ecommerce.API.Controller
         public IActionResult Cadastrar([FromBody] FabricanteViewModel fabricante)
         {
             var result = _fabricanteservice.Cadastrar(fabricante);
+
             return Ok(result);
         }
 
