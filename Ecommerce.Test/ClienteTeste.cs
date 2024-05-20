@@ -123,6 +123,7 @@ namespace Ecommerce.Test
         }
 
         [Fact]
+
         public async Task Alterar_DeveRetornarOk()
         {
             // Arrange
