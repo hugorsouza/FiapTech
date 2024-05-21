@@ -12,6 +12,9 @@ Essa fase do projeto contém, implementações:
 * Orquestração de containers com Kubernetes
 * Clean Architecture 
 
+## 💻 Video no Youtube
+https://youtu.be/Qs8LSjxSnC8
+
 # Documentação 📜
 Ecommerce Tech Challenge - [Levantamento de requisitos e critério de aceite.pdf](https://github.com/hugorsouza/FiapTech/blob/master/Ecommerce%20Tech%20Challenge%20-%20Levantamento%20de%20requisitos%20e%20crit%C3%A9rio%20de%20aceite.pdf)
 
