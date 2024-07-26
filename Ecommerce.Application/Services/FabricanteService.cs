@@ -15,17 +15,21 @@ namespace Ecommerce.Application.Services
     public class FabricanteService : IFabricanteService
     {
 
-        private readonly Domain.Interfaces.EFRepository.IFabricanteEfRepository _fabricanteRepository;
+        private readonly IFabricanteRepository _fabricanteRepository;
         private readonly IServiceBus _serviceBus;
         private readonly IFabricanteEfRepository _fabricanteEfRepository;
    
 
-        public FabricanteService( IServiceBus serviceBus, IFabricanteEfRepository fabricanteEfRepository)
+        public FabricanteService( IServiceBus serviceBus, IFabricanteEfRepository fabricanteEfRepository,
+            IFabricanteRepository fabricanteRepository
+            )
         {
             
             _serviceBus = serviceBus;
            
             _fabricanteEfRepository = fabricanteEfRepository;
+
+            _fabricanteRepository = fabricanteRepository;
 
         }
 
@@ -38,7 +42,9 @@ namespace Ecommerce.Application.Services
 
             var entity = BuidFabricante(entidade);
 
-            _serviceBus.SendMessage(entity, "fabricanteupdatequeue");
+            //_serviceBus.SendMessage(entity, "fabricanteupdatequeue");
+
+            _fabricanteRepository.Alterar(entity);
 
             return null;
         }
@@ -60,7 +66,8 @@ namespace Ecommerce.Application.Services
 
             fabricante.Endereco = endereco;
 
-            _serviceBus.SendMessage(fabricante, "fabricanteinsertqueue");
+            //_serviceBus.SendMessage(fabricante, "fabricanteinsertqueue");
+            _fabricanteRepository.Cadastrar(fabricante);
 
             return BuidModelResult(fabricante);
         }
@@ -72,14 +79,14 @@ namespace Ecommerce.Application.Services
 
         public FabricanteModelResult ObterPorId(int id)
         {
-            return BuidModelResult(_fabricanteEfRepository.ObterPorId(id));
+            return BuidModelResult(_fabricanteRepository.ObterPorId(id));
         }
 
         public IList<FabricanteModelResult> ObterTodos()
         {
             var listResult = new List<FabricanteModelResult>();
 
-            var result = _fabricanteEfRepository.ObterTodos();
+            var result = _fabricanteRepository.ObterTodos();
 
             foreach (var item in result)
                 listResult.Add(BuidModelResult(item));

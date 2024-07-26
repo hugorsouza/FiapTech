@@ -31,15 +31,15 @@ namespace Ecommerce.Application.Services
             if (categoria is null)
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {model.Id} não está cadastrada na Base!");    
 
-            var obj = _categoriaEfRepository.ObterPorId(model.Id);
+            var obj = _categoriaRepository.ObterPorId(model.Id);
 
             obj.Descricao = model.Descricao;
             obj.Nome = model.Nome;
             obj.Ativo = model.Ativo;
             
-            _categoriaEfRepository.Alterar(obj);
+            _categoriaRepository.Alterar(obj);
 
-           _serviceBus.SendMessage(model, "categoriaupdatequeue");
+           //_serviceBus.SendMessage(model, "categoriaupdatequeue");
 
             return BuildModelResult(obj);
         }
@@ -53,7 +53,8 @@ namespace Ecommerce.Application.Services
                 throw RequisicaoInvalidaException.PorMotivo($"Erro: A Categoria {categoria.Nome} Já está cadastrada!");
 
 
-           _serviceBus.SendMessage(categoria, "categoriainsertqueue");
+          
+            _categoriaRepository.Cadastrar(categoria);
 
             return BuildModelResult(categoria);
         }
@@ -61,7 +62,7 @@ namespace Ecommerce.Application.Services
         public CategoriaModelResult ObterPorId(int id)
         {
             //var result = _categoriaRepository.ObterPorId(id);
-            var result = _categoriaEfRepository.ObterPorId(id);
+            var result = _categoriaRepository.ObterPorId(id);
 
 
             return BuildModelResult(result);
@@ -72,7 +73,7 @@ namespace Ecommerce.Application.Services
             var resultList = new List<CategoriaModelResult>();
 
 
-            var result = _categoriaEfRepository.ObterTodos();
+            var result = _categoriaRepository.ObterTodos();
 
             foreach (var item in result)
                 resultList.Add(BuildModelResult(item));
@@ -109,13 +110,13 @@ namespace Ecommerce.Application.Services
 
         public void AlterarQueue(Categoria entidade)
         {
-            var obj = _categoriaEfRepository.ObterPorId(entidade.Id);
+            var obj = _categoriaRepository.ObterPorId(entidade.Id);
 
             obj.Descricao = entidade.Descricao;
             obj.Nome = entidade.Nome;
             obj.Ativo = entidade.Ativo;
 
-            _categoriaEfRepository.Alterar(obj);
+            _categoriaRepository.Alterar(obj);
 
            
         }

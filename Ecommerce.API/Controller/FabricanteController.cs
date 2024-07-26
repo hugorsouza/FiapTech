@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.API.Controller
 {
-    [Authorize]
+   // [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class FabricanteController : ControllerBase

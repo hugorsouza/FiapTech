@@ -22,7 +22,7 @@ namespace Ecommerce.Infra.Dapper.Repositories
 
             try
             {
-                var query1 = @"INSERT INTO FABRICANTE values (@Nome, @Ativo, @CNPJ);                          
+                var query1 = @"INSERT INTO FABRICANTE values (@Nome, @CNPJ, @Ativo);                          
                           SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 entidade.Id = dbConnection.Query<int>(query1, entidade, transaction).Single();
@@ -102,7 +102,7 @@ namespace Ecommerce.Infra.Dapper.Repositories
 
                     return fabricante;
                 }
-                ,param: new {Id = id }).SingleOrDefault();
+                ,param: new {Id = id }).FirstOrDefault();
 
         }
 

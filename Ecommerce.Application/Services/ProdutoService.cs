@@ -56,7 +56,8 @@ namespace Ecommerce.Application.Services
             var produtoViewModel = BuildViewModel(produto);
 
 
-            _serviceBus.SendMessage(produto, "produtoinsertqueue");       
+            //_serviceBus.SendMessage(produto, "produtoinsertqueue");
+            _produtoRepository.Cadastrar(produto);
 
 
             return BuildModelResult(produto);
@@ -73,8 +74,9 @@ namespace Ecommerce.Application.Services
                 throw RequisicaoInvalidaException.PorMotivo($"O Produto {entity.Id} não está cadastrado na Base");
 
             var produto = buidProduto(entidade);
-            
-            _serviceBus.SendMessage(produto, "produtoupdatequeue");
+
+            //_serviceBus.SendMessage(produto, "produtoupdatequeue");
+            _produtoRepository.Alterar(produto);
 
             return BuildModelResult(produto);
         }
@@ -86,7 +88,7 @@ namespace Ecommerce.Application.Services
 
         public ProdutoModelResult ObterPorId(int id)
         {
-            var result = _produtoEfRepository.ObterPorId(id);
+            var result = _produtoRepository.ObterPorId(id);
 
             return BuildModelResult(result);
         }
@@ -94,7 +96,7 @@ namespace Ecommerce.Application.Services
         public IList<ProdutoModelResult> ObterTodos()
         {
             var listResult = new List<ProdutoModelResult>();
-            var result = _produtoEfRepository.ObterTodos();
+            var result = _produtoRepository.ObterTodos();
 
             foreach (var item in result)
                 listResult.Add(BuildModelResult(item));

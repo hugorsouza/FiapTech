@@ -116,18 +116,18 @@ public class ClienteRepository : Repository<Cliente>, IClienteRepository
     {
         const string sql = @"
             INSERT INTO Cliente
-                (Id ,Nome ,Sobrenome
+                (Nome ,Sobrenome
                 ,Cpf ,DataNascimento ,DataCadastro
                 ,RecebeNewsletterEmail)
             VALUES (
-               @Id, @Nome, @Sobrenome
+                @Nome, @Sobrenome
                ,@Cpf, @DataNascimento, @DataCadastro
                ,@RecebeNewsletterEmail
             )
         ";
         var parametros = new
         {
-            entidade.Id,
+            
             entidade.Nome,
             entidade.Sobrenome,
             entidade.Cpf,
